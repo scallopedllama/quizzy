@@ -33,7 +33,7 @@
   		  <input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt<?php echo $j; ?>" onClick="quizFile = '<?php echo $filename; ?>'; quizIndex = <?php echo $i; ?>;" name="quizzy_quiz_sel">
         <label class="quizzy_quiz_lbl" id="quizzy_quiz_lbl<?php echo $j; ?>"><?php echo $curQuiz->title; ?></label>
         <?php if(isset($curQuiz->img)) { ?>
-          <img src="<?php echo $curQuiz->img['src']; ?>" alt="<?php echo $curQuiz->img['alt']; ?>" > 
+          <img src="<?php echo $picDir . $curQuiz->img['src']; ?>" alt="<?php echo $curQuiz->img['alt']; ?>" > 
         <?php 
         }
         if(isset($curQuiz->description)) { 
