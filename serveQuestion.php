@@ -63,7 +63,7 @@
     
       <p>Grade: <span class="quizzy_result_grade quizzy_result_grade_<?php echo $scoreRange->grade; ?>"><?php echo $scoreRange->grade; ?></span> (<?php printf('%.1f%%', $percentage); ?>)</p>
       <?php if(isset($scoreRange->img)) { ?>
-        <div class="quizzy_result_img"><img src="<?php echo $scoreRange->img['src'];?>" alt="<?php echo $scoreRange->img['alt'];?>" ></div>
+        <div class="quizzy_result_img"><img src="<?php echo $picDir . $scoreRange->img['src'];?>" alt="<?php echo $scoreRange->img['alt'];?>" ></div>
       <?php } ?>
       <p class="quizzy_result_rank quizzy_result_rank_<?php echo $scoreRange->rank; ?>"><?php echo $scoreRange->rank; ?></p>
       <div class="quizzy_result_foot"><input type="submit" onclick="restartQuizzy();" value="Do a different Quiz"></div>
