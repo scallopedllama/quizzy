@@ -223,10 +223,10 @@ function checkQuestion()
 		//show the values
 		for( i in optValues ) {
 			
-			//if the question no partial credit, use an X or a √ to indicate correctness
+			//if the question no partial credit, use an X or a ✓ to indicate correctness
 			var toWrite = optValues[i];
 			if(!partialCredit)
-				toWrite = (optValues[i] == bestScore) ? '√' : 'X';
+				toWrite = (optValues[i] == bestScore) ? '✓' : 'X';
 			
 			//if it was best score, use quizzy_opt_best
 			//in between best and worst, use quizzy_opt_mid
@@ -245,7 +245,11 @@ function checkQuestion()
 		//wait slideUpWait millisec
 		setTimeout(function() {
 			//scroll up all but the selected answer and the best answer
-			$('.quizzy_q_opt[id!=quizzy_q' + curQuestion + '_opt' + correctOpt + '][id!=quizzy_q' + curQuestion + '_opt' + selOpt + ']').slideUp(slideSpeed);
+			var correctSel = '[id!=quizzy_q' + curQuestion + '_opt' + correctOpt + ']';
+			var pickedSel = '[id!=quizzy_q' + curQuestion + '_opt' + selOpt + ']';
+			if(addScore == bestScore)
+				correctSel = '';
+			$('.quizzy_q_opt' + correctSel + pickedSel).slideUp(slideSpeed);
 			
 			//wait expFadeInWait millisec
 			setTimeout(function() {
