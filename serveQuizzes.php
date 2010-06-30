@@ -2,7 +2,7 @@
   include 'quizzyConfig.php';
   //open the quizzes dir
   $quizDir = dir($quizFolder);
-  $cwd = getcwd();
+  $cwd = str_replace('\\', '/', getcwd());
   
   //represents where this quiz's pictures should be found
   $picDir = 'quizzy/'.$quizFolder.'/'.$picFolder.'/';
