@@ -10,7 +10,7 @@
 	 *  _GET['quizIndex']      index of requested quiz in xml file
 	 *   
 	 */
-	$quizFile = $_GET['quizFile'];
+	$quizFile = $cwd.'/'.$quizFolder.'/'.$_GET['quizFile'];
 	$quizIndex = intval($_GET['quizIndex']);
 		
 	//load up the quiz

@@ -24,4 +24,6 @@
   //The message displayed at the end of the quiz before the user's score, grade, and rank
   //this is put in an h1 tag
   $endQuizMessage = 'Done!';
+
+  $cwd = str_replace('\\', '/', getcwd());
 ?>

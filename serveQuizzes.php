@@ -2,7 +2,6 @@
   include 'quizzyConfig.php';
   //open the quizzes dir
   $quizDir = dir($quizFolder);
-  $cwd = str_replace('\\', '/', getcwd());
   
   //represents where this quiz's pictures should be found
   $picDir = 'quizzy/'.$quizFolder.'/'.$picFolder.'/';
@@ -30,7 +29,7 @@
   	foreach ($quizXML->quiz as $curQuiz){
 ?>
   		<p>
-  		  <input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt<?php echo $j; ?>" onClick="quizFile = '<?php echo $filename; ?>'; quizIndex = <?php echo $i; ?>;" name="quizzy_quiz_sel">
+  		  <input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt<?php echo $j; ?>" onClick="quizFile = '<?php echo basename($filename); ?>'; quizIndex = <?php echo $i; ?>;" name="quizzy_quiz_sel">
         <label class="quizzy_quiz_lbl" id="quizzy_quiz_lbl<?php echo $j; ?>"><?php echo $curQuiz->title; ?></label>
         <?php if(isset($curQuiz->img)) { ?>
           <img src="<?php echo $picDir . $curQuiz->img['src']; ?>" alt="<?php echo $curQuiz->img['alt']; ?>" > 

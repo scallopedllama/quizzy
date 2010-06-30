@@ -12,7 +12,7 @@
 	 *  _GET['score']          score the player currently has (needed for serving last page)
 	 *   
 	 */
-	$quizFile = $_GET['quizFile'];
+	$quizFile = $cwd.'/'.$quizFolder.'/'.$_GET['quizFile'];
 	$quizIndex = intval($_GET['quizIndex']);
   $questNo = intval($_GET['questNo']);
   $score = intval($_GET['score']);

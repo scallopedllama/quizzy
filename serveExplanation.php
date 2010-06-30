@@ -13,7 +13,7 @@
    *	_GET['selOpt']				 the option for which to retrieve the explanation
    */
 
-	$quizFile = $_GET['quizFile'];
+	$quizFile = $cwd.'/'.$quizFolder.'/'.$_GET['quizFile'];
 	$quizIndex = intval($_GET['quizIndex']);
   $questNo = intval($_GET['questNo']);
   $selOpt = intval($_GET['selOpt']);
