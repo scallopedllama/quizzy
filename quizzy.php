@@ -19,16 +19,27 @@
     
   } // Default behavior
   
-  // Every time that this file is called and execution makes it this far,
-  // there should have been a passed quizfile and index for the quiz to load.
-  // We'll do this now since we will definitely need to do it eventually.
-  $quiz_file = $quizzy_cwd . '/' . $quizzy_quiz_folder . '/' . $_GET['quizzy_file'];
-  $quiz_index = intval($_GET['quizzy_index']);
-  $quiz = loadQuiz($quiz_file, $quiz_index);  
-
-    
+  
+  /**
+   *  Quiz XML file opening and parsing
+   *
+   * Every time that this file is called and execution makes it this far,
+   * there should have been a passed quizfile and index for the quiz to load.
+   * We'll do this now since we will definitely need to do it eventually.
+   * 
+   * @author Joe Balough
+   */
   // This string represents where this quiz's pictures should be found
   $pic_dir = $quizzy_cwd . '/' . $quiz_folder . '/' . $pic_folder . '/';
+  $quiz_file = $quizzy_cwd . '/' . $quizzy_quiz_folder . '/' . $_GET['quizzy_file'];
+  $quiz_index = intval($_GET['quizzy_index']);
+  $quiz = loadQuiz($quiz_file, $quiz_index);
+  $quiz_xml = simplexml_load_file($quiz_file);
+  $quiz = $quiz_xml->quiz[$quiz_index];
+
+  
+  
+  
   
   /**
    * The serve_explanation fucntion will return the HTML explanation for the requested
@@ -101,17 +112,19 @@
   switch ($_GET['quizzy_opt']) {
     
     case 'quizzes':
-    
+      serve_quizzes();
       break;
       
     case 'quiz':
-    
+      serve_quiz();
       break;
       
     case 'question':
-    
+      serve_question();
       break;
     
     case 'explanation':
+      serve_explanation();
       break;
-  } // Switching operation
+  }
+?>
