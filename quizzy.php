@@ -83,12 +83,66 @@
    * The serve_quizzes function will return an HTML string that lists all of the
    * quizzes that are available in the $quizzy_quiz_folder.
    * 
-   * @param
    * @return an HTML formatted string displaying a list of quizzes available
    * @author Joe Balough
    */
   function serve_quizzes() {
+    // Open the quizzes dir
+    $quiz_dir = dir($quizFolder);
+
+    // Begin formatting the list
+    $output = '<div class="quizzy_load_body">';
+    $output .= '<h1>' . $quizzy_pick_quiz_message . '</h1>';
+
+    // Loop through all the files in the directory, making sure they're not . or ..
+    $file_no = 0;
+    while (($file = $quiz_dir->read()) !== false) {
+      if ( ($file == '.') || ($file == '..') ) continue;
+      
+      // Make sure it's an XML file
+      if (!strpos(strtolower($file), 'xml'))
+        continue;
+      
+      // Open that file and parse its xml
+      $filename = $cwd.'/'.$quizFolder.'/'.$file;
+      $quiz_xml= simplexml_load_file($filename);
+      
+      // Generate a list of all the quizzes in this xml file
+      $quiz_no=0;
+      foreach ($quiz_xml->quiz as $cur_quiz){
+        $output .= '<p>';
+        $output .= '<input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt' . $file_no . '" onClick="quizFile = \'' . basename($filename) . '\'; quizIndex = ' . $quiz_no . ';" name="quizzy_quiz_sel">';
+        $output .= '<label class="quizzy_quiz_lbl" id="quizzy_quiz_lbl' . $file_no . '">' . $cur_quiz->title . '</label>';
+        
+        // Add an image after the label if one was set
+        if(isset($cur_quiz->img)) {
+          $output .= '<img src="' . $pic_dir . $cur_quiz->img['src'] . '" alt="' . $cur_quiz->img['alt'] . '">'; 
+        }
+        
+        // Add a description if one was set
+        if(isset($cur_quiz->description)) { 
+          $output .= '<br>';
+          $output .= '<div id="quizzy_quiz_desc' . $file_no . '" class="quizzy_quiz_desc">';
+          
+          // Add an image to the description if one was set
+          if(isset($cur_quiz->description->img)) { 
+            $output .= '<img src="' . $pic_dir . $cur_quiz->description->img['src'] . '" alt="' . $cur_quiz->description->img['alt'] . '" >';
+          }
+          
+          // Description text
+          $output .= $cur_quiz->description->text;
+          $output .= '</div>';
+        }
+        
+        $output .= '</p>';
+        ++$quiz_no; ++$file_no;
+      }
+    }
     
+    // Finish up output for the quiz list
+    $output .= '</div>';
+    $output .= '<div class="quizzy_load_foot"><input type="submit" class="quizzy_b" id="quizzy_start_b" value="Start Quiz"></div>';
+    return $output;
   }
   
   
