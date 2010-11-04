@@ -147,12 +147,53 @@
   
   
   /**
+   * The serve_quiz function will return the HTML formatted string that represents the start
+   * of a quiz. It's formatted using JSON to include a some javaScript variables.
+   *
+   * @param string $_GET['quizzy_file']
+   *   The filename of the xml file containing the currently running quiz
+   * @param int $_GET['quizzy_index']
+   *   The quiz index in that file (first quiz is index 0)
+   * @return JSON formatted output containing the following variables:
+   *   numQuestions  - The number of questions in this quiz
+   *   quizTitle     - The name of the quiz
+   *   quiz          - The HTML formatted string representing the start of the requested quiz
+   * @author Joe Balough
+   */
+  function serve_quiz() {
+    // All the following variable is returned as JSON output.
+    $output = array();
+
+    // Find the number of questions and quiz title and add it to the return
+    $output['numQuestions'] = count($quiz->question);
+    $output['quizTitle'] = $quiz->title;
+
+    // Build the quiz container
+    $output['quiz']  = '<div class="quizzy_title">' . $quiz_title . '</div>';
+    $output['quiz'] .= '<div id="quizzy_q_c">';
+    
+    // Every question <div>. Note that we're making one extra for the results page.
+    for($qi = 0; $qi < $num_questions + 1; $qi++)
+      $output['quiz'] .= '<div class="quizzy_q" id="quizzy_q' . $qi . '" style="width: ' . $quizzy_quiz_width . '">&nbsp;</div>';
+    
+    // Close up the quiz div
+    $output['quiz'] .= '</div>';
+    
+    return json_encode($output);
+  }
+  
+  
+  /**
    * The serve_explanation function will return the HTML explanation for the requested
-   * question and option. It's return is formatted in JSON including 2 variables.
+   * question and option. It's return is formatted in JSON including several variables.
    * 
-   * @param string _GET['questNo']
+   * @param string $_GET['quizzy_file']
+   *   The filename of the xml file containing the currently running quiz
+   * @param int $_GET['quizzy_index']
+   *   The quiz index in that file (first quiz is index 0)
+   * @param string $_GET['quest_no']
    *   question to return (first is 0)
-   * @param string _GET['selOpt']
+   * @param string $_GET['sel_opt']
    *   the option for which to retrieve the explanation
    * @return JSON formatted output containing the following variables:
    *     optValues   - An array specifiying how many points each of the options were worth
@@ -210,6 +251,6 @@
     $output['explanation'] .= '<p>' . $exp->text . '</p>';
     
     return json_encode($output);
-    
-  } // serve_explanation
+  }
+  
 ?>
