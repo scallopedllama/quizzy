@@ -96,7 +96,7 @@
 
     // Loop through all the files in the directory, making sure they're not . or ..
     $file_no = 0;
-    while (($file = $quiz_dir->read()) !== false) {
+    while ( ($file = $quiz_dir->read()) !== false ) {
       if ( ($file == '.') || ($file == '..') ) continue;
       
       // Make sure it's an XML file
@@ -115,17 +115,17 @@
         $output .= '<label class="quizzy_quiz_lbl" id="quizzy_quiz_lbl' . $file_no . '">' . $cur_quiz->title . '</label>';
         
         // Add an image after the label if one was set
-        if(isset($cur_quiz->img)) {
+        if (isset($cur_quiz->img)) {
           $output .= '<img src="' . $pic_dir . $cur_quiz->img['src'] . '" alt="' . $cur_quiz->img['alt'] . '">'; 
         }
         
         // Add a description if one was set
-        if(isset($cur_quiz->description)) { 
+        if (isset($cur_quiz->description)) { 
           $output .= '<br>';
           $output .= '<div id="quizzy_quiz_desc' . $file_no . '" class="quizzy_quiz_desc">';
           
           // Add an image to the description if one was set
-          if(isset($cur_quiz->description->img)) { 
+          if (isset($cur_quiz->description->img)) { 
             $output .= '<img src="' . $pic_dir . $cur_quiz->description->img['src'] . '" alt="' . $cur_quiz->description->img['alt'] . '" >';
           }
           
@@ -173,7 +173,7 @@
     $output['quiz'] .= '<div id="quizzy_q_c">';
     
     // Every question <div>. Note that we're making one extra for the results page.
-    for($qi = 0; $qi < $num_questions + 1; $qi++)
+    for ($qi = 0; $qi < $num_questions + 1; $qi++)
       $output['quiz'] .= '<div class="quizzy_q" id="quizzy_q' . $qi . '" style="width: ' . $quizzy_quiz_width . '">&nbsp;</div>';
     
     // Close up the quiz div
@@ -184,22 +184,157 @@
   
   
   /**
+   * The serve_qustion function will return the HTML that represents the current question in the quiz.
+   *
+   * @param string $_GET['quizzy_file']
+   *   The filename of the xml file containing the currently running quiz
+   * @param int $_GET['quizzy_index']
+   *   The quiz index in that file (first quiz is index 0)
+   * @param int $_GET['quest_no']
+   *   the question to return (first is 0)
+   * @param int $_GET['score']
+   *   The score the player currently has (needed for serving last page)
+   * @return HTML encoded string that represents the current question
+   * @author Joe Balough
+   */
+  function serve_question() {
+    // What will be outputted
+    $output = '';
+
+    // Get the other variables needed by this function
+    $question_no = intval($_GET['quest_no']);
+    $score = intval($_GET['score']);
+
+    // Check the bounds on the requested question number. If it's larger than the nubmer of questions in the quiz, serve up a results page.
+    if ($question_no >= count($quiz->question))
+    {
+      // Find the max possible score for the quiz
+      // Check each question
+      $max_score = 0;
+      foreach ($quiz->question as $quest) {
+        $quest_max = 0;
+        
+        // And each option in those questions
+        foreach ($quest->option as $opt) {
+        
+          // Find the highest scoring option
+          if (intval($opt->score) > $quest_max)
+            $quest_max = $opt->score;
+        }
+        // Add the highest scoring option to the max_score
+        $max_score += intval($quest_max);
+      }
+      
+      // Begin formatting the output
+      $output .= '<div class="quizzy_result">';
+      $output .= '<h1>' . $quizzy_end_quiz_message . '</h1>';
+      $output .= '<p>You scored <span class="quizzy_result_score">' . $score . '</span> out of <span class="quizzy_result_max">' . $max_score . '</span> possible points!</p>';
+
+      // Calculate a percentage score, then use the grading information in the xml data to put some more stuff up
+      $percentage = ($score / $max_score) * 100;
+
+      // Find the correct score range
+      $score_range = NULL;
+      foreach ($quiz->grading->range as $range) {
+        // Drop the range that starts a 0 to -1 so that it WILL be less than the percentage
+        if (intval($range['start']) == 0) $range['start'] = -1;
+        
+        // Check the range
+        if (intval($range['start']) < $percentage && intval($range['end']) >= $percentage) {
+          $score_range = $range;
+          break;
+        }
+      }
+
+      // Finish up the output with the grading information
+      $output .= '<p>Grade: <span class="quizzy_result_grade quizzy_result_grade_' . $score_range->grade . '">' . $score_range->grade . '</span> (' . sprintf('%.1f%%', $percentage) . ')</p>';
+      // Add picture if defined
+      if (isset($score_range->img)) {
+        $output .= '<div class="quizzy_result_img"><img src="' . $pic_dir . $score_range->img['src'] . '" alt="' . $score_range->img['alt'] . '" ></div>';
+      }
+      
+      $output .= '<p class="quizzy_result_rank quizzy_result_rank_' . $score_range->rank . '">' . $score_range->rank . '</p>';
+      $output .= '<div class="quizzy_result_foot"><input type="submit" onclick="restartQuizzy();" value="Do a different Quiz"></div>';
+      $output .= '</div>';
+      
+      return $output;
+    }
+
+    // Get the requested question
+    $quest = $quiz->question[$question_no];
+    
+    // Add the question itself
+    $output .= '<div class="quizzy_q_body">';
+    
+    // Picture goes first for the float: right business
+    if (isset( $quest->img )) {
+      $output .= '<img src="' . $pic_dir . $quest->img['src'] . '" alt="' . $quest->img['alt'] . '">';
+    }
+    
+    $output .= '<p>' . $quest->text . '</p>';
+    $output .= '</div>';
+    
+    // Then add all the options for the question
+    $output .= '<div class="quizzy_q_opts">';
+    $option_no = 0;
+    foreach ($quest->option as $opt)
+    {
+      // Start paragraph wrapper
+      $output .= '<p class="quizzy_q_opt" id="quizzy_q' . $question_no . '_opt' . $option_no . '">';
+      
+      // Radio button
+      $output .= '<input type="radio" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
+      
+      // Label
+      $output .= '<label>' . $opt->text;
+      
+      // Picture for label if exists
+      if (isset($opt->img)) {
+        $output .= '<img src="' . $pic_dir . $opt->img['src'] . '" alt="' . $opt->img['alt'] . '">';
+      }
+      
+      // Span that will be filled with the option's score after the user clicks 'check score'
+      $output .= '<span class="quizzy_q_opt_val" id="quizzy_q' . $question_no . '_opt' . $option_no . '_val"></span>';
+      
+      // Finish off label and paragrah wrappers
+      $output .= '</label>';
+      $output .= '</p>';
+
+      $option_no++;
+    }
+    
+    // Add an empty <div> that will be filled with the question's explanation
+    $output .= '<div class="quizzy_q_exp" id="quizzy_q' . $question_no . '_exp"></div>';
+    
+    // Finish off options wrapper
+    $output .= '</div>';
+
+    // Footer <div> with Check Answer buttno and Next button
+    $output .= '<div class="quizzy_q_foot">';
+    $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_chk" value="Check Answer">';
+    $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_nxt" value="Next">';
+    $output .= '</div>';
+    
+    return $output;
+  }
+   
+  
+  /**
    * The serve_explanation function will return the HTML explanation for the requested
-   * question and option. It's return is formatted in JSON including several variables.
+   * question and option. Its return is formatted in JSON including several variables.
    * 
    * @param string $_GET['quizzy_file']
    *   The filename of the xml file containing the currently running quiz
    * @param int $_GET['quizzy_index']
    *   The quiz index in that file (first quiz is index 0)
-   * @param string $_GET['quest_no']
-   *   question to return (first is 0)
-   * @param string $_GET['sel_opt']
-   *   the option for which to retrieve the explanation
+   * @param int $_GET['quest_no']
+   *   The question to return (first is 0)
+   * @param int $_GET['sel_opt']
+   *   The option for which to retrieve the explanation
    * @return JSON formatted output containing the following variables:
    *     optValues   - An array specifiying how many points each of the options were worth
    *     addScore    - How many points should be added to the score
    *     correctOpt  - Which was the best option
-   *     bestScore   - What was the best possible score
    *     explanation - HTML formatted string representing the explanation text
    * @author Joe Balough
    */
