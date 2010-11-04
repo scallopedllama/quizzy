@@ -1,10 +1,15 @@
 <?php
 
+  // Global variables
+  
+  // This string represents where this quiz's pictures should be found
+  $pic_dir = $quizzy_cwd . '/' . $quiz_folder . '/' . $pic_folder . '/';
+
   /**
    *  Default behavior: Just add the quizzy container
    */
   
-  if (!isset($_GET['quizzy_opt']) || empty($_GET['quizzy_opt'])) {
+  if (!isset($_GET['quizzy_op']) || empty($_GET['quizzy_op'])) {
 ?>
 <div id="quizzy" style="width: <?php echo $quizzy_quiz_width; ?>px; height: <?php echo $quizzy_quiz_height; ?>px">
   <div id="quizzy_c" style="width: <?php echo ($quizzy_quiz_width * 3); ?>px">
@@ -18,7 +23,37 @@
     return;
     
   } // Default behavior
+    
+  /** 
+   * Quizzy operator handeler.
+   * At this point, $_GET['quizzy_opt'] must have something in there so quizzy is running on this client and requesting
+   * specific data so switch that data and serve up what quizzy needs.
+   * 
+   * @param string $_GET['quizzy_op']
+   *   A string indicating what operation is being requested
+   * @author Joe Balough
+   */
+  switch ($_GET['quizzy_op']) {
+    
+    case 'quizzes':
+      serve_quizzes();
+      break;
+      
+    case 'quiz':
+      serve_quiz();
+      break;
+      
+    case 'question':
+      serve_question();
+      break;
+    
+    case 'explanation':
+      serve_explanation();
+      break;
+  }
   
+  // There shouldn't be any code below to run but this is here just in case.
+  return;
   
   /**
    *  Quiz XML file opening and parsing
@@ -27,29 +62,45 @@
    * there should have been a passed quizfile and index for the quiz to load.
    * We'll do this now since we will definitely need to do it eventually.
    * 
+   * @param string $_GET['quizzy_file']
+   *   The filename of the quiz to open
+   * @param string $_GET['quizzy_index']
+   *   The index of the quiz to open in that file
+   * @return object $quiz
+   *   The tinyXML object representing the requested quiz
    * @author Joe Balough
    */
-  // This string represents where this quiz's pictures should be found
-  $pic_dir = $quizzy_cwd . '/' . $quiz_folder . '/' . $pic_folder . '/';
-  $quiz_file = $quizzy_cwd . '/' . $quizzy_quiz_folder . '/' . $_GET['quizzy_file'];
-  $quiz_index = intval($_GET['quizzy_index']);
-  $quiz = loadQuiz($quiz_file, $quiz_index);
-  $quiz_xml = simplexml_load_file($quiz_file);
-  $quiz = $quiz_xml->quiz[$quiz_index];
+  function load_quiz() {
+    $quiz_file = $quizzy_cwd . '/' . $quizzy_quiz_folder . '/' . $_GET['quizzy_file'];
+    $quiz_index = intval($_GET['quizzy_index']);
+    $quiz_xml = simplexml_load_file($quiz_file);
+    $quiz = $quiz_xml->quiz[$quiz_index];
+    return $quiz;
+  }
 
   
-  
+  /**
+   * The serve_quizzes function will return an HTML string that lists all of the
+   * quizzes that are available in the $quizzy_quiz_folder.
+   * 
+   * @param
+   * @return an HTML formatted string displaying a list of quizzes available
+   * @author Joe Balough
+   */
+  function serve_quizzes() {
+    
+  }
   
   
   /**
-   * The serve_explanation fucntion will return the HTML explanation for the requested
+   * The serve_explanation function will return the HTML explanation for the requested
    * question and option. It's return is formatted in JSON including 2 variables.
    * 
-   * @param
-   *    _GET['questNo']        question to return (first is 0)
-   *    _GET['selOpt']         the option for which to retrieve the explanation
-   * @return
-   *   JSON formatted output containing the following three variables:
+   * @param string _GET['questNo']
+   *   question to return (first is 0)
+   * @param string _GET['selOpt']
+   *   the option for which to retrieve the explanation
+   * @return JSON formatted output containing the following variables:
    *     optValues   - An array specifiying how many points each of the options were worth
    *     addScore    - How many points should be added to the score
    *     correctOpt  - Which was the best option
@@ -60,6 +111,9 @@
   function serve_explanation() {
     // The output array that will eventually be passed to json_encode.
     $output = array();
+    
+    // Load up the quiz
+    $quiz = load_quiz();
     
     // Get those other needed variables
     $quest_no = intval($_GET['quest_no']);
@@ -104,27 +158,4 @@
     return json_encode($output);
     
   } // serve_explanation
-
-
-  
-  // At this point, $_GET['quizzy_opt'] must have something in there so quizzy is running on this client and requesting
-  // specific data so switch that data and serve up what quizzy needs.
-  switch ($_GET['quizzy_opt']) {
-    
-    case 'quizzes':
-      serve_quizzes();
-      break;
-      
-    case 'quiz':
-      serve_quiz();
-      break;
-      
-    case 'question':
-      serve_question();
-      break;
-    
-    case 'explanation':
-      serve_explanation();
-      break;
-  }
 ?>

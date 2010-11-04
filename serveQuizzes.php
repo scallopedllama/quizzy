@@ -1,13 +1,10 @@
 <?php 
-  include 'quizzyConfig.php';
-  //open the quizzes dir
+  // Open the quizzes dir
   $quizDir = dir($quizFolder);
   
-  //represents where this quiz's pictures should be found
-  $picDir = 'quizzy/'.$quizFolder.'/'.$picFolder.'/';
-  
-  echo '<div class="quizzy_load_body">';
-	echo '<h1>'.$pickQuizMessage.'</h1>';
+  // Represents what will be returned
+  $output = '<div class="quizzy_load_body">';
+  $output .= '<h1>' . $quizzy_pick_quiz_message . '</h1>';
   
   //List files in quizzes directory
   $j = 0;
