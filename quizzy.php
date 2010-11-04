@@ -1,23 +1,25 @@
 <?php
 
-  // Global variables
-  
+  // Global variables:
   // This string represents where this quiz's pictures should be found
   $pic_dir = $quizzy_cwd . '/' . $quiz_folder . '/' . $pic_folder . '/';
 
   /**
-   *  Default behavior: Just add the quizzy container
+   * Default behavior: Just add the quizzy container
+   * @author Joe Balough
    */
   
   if (!isset($_GET['quizzy_op']) || empty($_GET['quizzy_op'])) {
-?>
-<div id="quizzy" style="width: <?php echo $quizzy_quiz_width; ?>px; height: <?php echo $quizzy_quiz_height; ?>px">
-  <div id="quizzy_c" style="width: <?php echo ($quizzy_quiz_width * 3); ?>px">
-    <div id="quizzy_load" style="width: <?php echo $quizzy_quiz_width; ?>px"></div>
-    <div id="quizzy_quiz" style="width: <?php echo ($quizzy_quiz_width * 3); ?>px"></div>
-  </div>
-</div>
-<?php
+    // Wrapper for everything in the quiz (overflow: hidden)
+    echo '<div id="quizzy" style="width: ' . $quizzy_quiz_width . 'px; height: ' . $quizzy_quiz_height . 'px">';
+    // Wrapper that contains two panes: quiz select screen on left and the selected quiz on right
+    echo '<div id="quizzy_c" style="width: ' . ($quizzy_quiz_width * 3) . 'px">';
+    // The quiz select wrapper (the left side above)
+    echo '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px"></div>';
+    // And the quiz wrapper (the right side above)
+    echo '<div id="quizzy_quiz" style="width: ' . ($quizzy_quiz_width * 3) . 'px"></div>';
+    echo '</div>';
+    echo '</div>';
     
     // Nothing else to be done, so simply stop running this script right now.
     return;
