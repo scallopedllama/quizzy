@@ -166,7 +166,7 @@
       $quiz_no=0;
       foreach ($quiz_xml->quiz as $cur_quiz) {
         $output .= '<p>';
-        $output .= '<input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt' . $file_no . '" onClick="quizFile = \'' . basename($filename) . '\'; quizIndex = ' . $quiz_no . ';" name="quizzy_quiz_sel">';
+        $output .= '<input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt' . $file_no . '" onClick="quizzyState.quizFile = \'' . basename($filename) . '\'; quizzyState.quizIndex = ' . $quiz_no . ';" name="quizzy_quiz_sel">';
         $output .= '<label class="quizzy_quiz_lbl" id="quizzy_quiz_lbl' . $file_no . '">' . $cur_quiz->title . '</label>';
         
         // Add an image after the label if one was set
