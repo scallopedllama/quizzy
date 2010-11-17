@@ -46,7 +46,11 @@
 
   // Keeps track of the current working directory.
   // This bit here will prevent breakage on windows by replacing '\' characters with '/' characters
-  $quizzy_cwd = str_replace('\\', '/', getcwd());
+  $quizzy_cwd = str_replace('\\', '/', getcwd() . '/quizzy');
+  
+  // This string represents where this quiz's pictures should be found
+  $quizzy_pic_dir = 'quizzy/' . $quizzy_quiz_folder . '/' . $quizzy_pic_folder . '/';
+  
   
   /**
    *  JavaScript-Only Global Variables
@@ -103,8 +107,8 @@
     
     // The width and height of the quiz window. These are set above so their PHP variable values are simply used here.
     // You shouldn't change this.
-    'quizzyQuizWidth' => $quiz_width,
-    'quizzyQuizHeight' => $quiz_height,
+    'quizzyQuizWidth' => $quizzy_quiz_width,
+    'quizzyQuizHeight' => $quizzy_quiz_height,
     
   ); // js_variables
   
