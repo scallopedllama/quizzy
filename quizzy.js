@@ -35,12 +35,25 @@ quizzyState.width = -1;
 // NOTE: This variable isn't used in here anywhere.
 quizzyState.height = -1;
 
-// When the document is read, start loading up the quiz
+/**
+ * This function is called when the page is fully loaded and ready to run javaScript.
+ * It initializes the loading plugin, resets the quizzy state,
+ * and finishes loading up quizzy.
+ */
 $(document).ready(function() {
-  $.loading.pulse = loadingPulse;
-  $.loading.align = loadingAlign;
+  // Get the JavaScript variables via JSON from quizzy.php
+  $.getJSON('quizzy/quizzy.php', {quizzy_op: 'config'}, function (data) {
+    // Merge the data object into the quizzyState object
+    for (var key in data) {
+      quizzyState[key] = data[key];
+    }
+  });
+  
+  $.loading.pulse = quizzyState.loadingPulse;
+  $.loading.align = quizzyState.loadingAlign;
+  // $.loading.delay = quizzyState.loadingDelay;
   $.loading.onAjax = true;	// don't change this!
-  // $.loading.delay = loadingDelay;
+  
   // reset all the variables
   quizzyState.file = "";
   quizzyState.index = -1;
@@ -55,7 +68,7 @@ $(document).ready(function() {
 
   // load the quiz list
   // the buttons have onClick events so they're handled up there
-  $.get('quizzy/serveQuizzes.php', function(data){
+  /*$.get('quizzy/serveQuizzes.php', function(data){
     $('#quizzy_load').html(data);
     
     // hide the descriptions
@@ -91,10 +104,11 @@ $(document).ready(function() {
     
     // set the click event on the submit button
     $('#quizzy_start_b').click(startQuiz);
-  });
+  });*/
 
 });
 
+/*
 // requests a quiz setup from the server
 function startQuiz()
 {
@@ -325,3 +339,4 @@ function restartQuizzy()
     }); // quizzy_c
   }); // quizzy_q_c
 }
+*/
