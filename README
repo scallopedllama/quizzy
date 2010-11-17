@@ -22,10 +22,11 @@ Browser compatibility -- Tested and confirmed working (with above mentioned quir
 
 To use: 
   1. extract quizzy and put the 'quizzy' directory into the same folder as your webpage.
-  2. drop <?php include 'quizzy/quizzy_config.php';?> in your <head> section
+  2. drop <?php include 'quizzy/quizzy_header.php';?> in your <head> section
   3. put <?php include 'quizzy/quizzy.php'; ?> in your <body> section where you want the quiz
   4. edit quizzy_config.php and to your liking
   5. Create some quizzes and drop them into $quiz_folder (probably 'quizzy/quizzes/')
+  6. Make sure that you have the json extension enabled in your php configuration
 
 
 Quiz XML formatting:
