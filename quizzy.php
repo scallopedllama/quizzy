@@ -16,9 +16,18 @@
    * You should have received a copy of the GNU Affero General Public 
    * License along with quizzy. If not, see <http://www.gnu.org/licenses/>.
    */
+   
+  // Keeps track of the current working directory.
+  // This bit here will prevent breakage on windows by replacing '\' characters with '/' characters
+  $quizzy_cwd = str_replace('\\', '/', dirname ( realpath (__FILE__) ) );
   
-  include_once $quizzy_cwd . '/' . 'quizzy_config.php';
-
+  // Include the config
+  include_once $quizzy_cwd . '/quizzy_config.php';
+  
+  // This string represents where this quiz's pictures should be found
+  $quizzy_pic_dir = 'quizzy/' . $quizzy_quiz_folder . '/' . $quizzy_pic_folder . '/';
+  
+  
   /**
    * Default behavior: Just add the quizzy container
    * @author Joe Balough
@@ -61,23 +70,23 @@
   switch ($_GET['quizzy_op']) {
   
     case 'config':
-      serve_config();
+      echo serve_config();
       break;
     
     case 'quizzes':
-      serve_quizzes();
+      echo serve_quizzes();
       break;
       
     case 'quiz':
-      serve_quiz();
+      echo serve_quiz();
       break;
       
     case 'question':
-      serve_question();
+      echo serve_question();
       break;
     
     case 'explanation':
-      serve_explanation();
+      echo serve_explanation();
       break;
   }
   
