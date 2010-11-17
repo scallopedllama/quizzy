@@ -17,7 +17,7 @@
   
 // current quiz state
 quizzyState = new Object;
-quizzyState.file = "";
+quizzyState.quizFile = "";
 quizzyState.index = -1;
 quizzyState.currentQuestion = -1;
 quizzyState.score = 0;
@@ -39,6 +39,8 @@ quizzyState.height = -1;
  * This function is called when the page is fully loaded and ready to run javaScript.
  * It initializes the loading plugin, resets the quizzy state,
  * and finishes loading up quizzy.
+ * 
+ * @author Joe Balough
  */
 $(document).ready(function() {
   // Get the JavaScript variables via JSON from quizzy.php
@@ -47,69 +49,61 @@ $(document).ready(function() {
     for (var key in data) {
       quizzyState[key] = data[key];
     }
+  
+    $.loading.pulse = quizzyState.loadingPulse;
+    $.loading.align = quizzyState.loadingAlign;
+    // $.loading.delay = quizzyState.loadingDelay;
+    $.loading.onAjax = true;  // don't change this!
+  });
+
+  // hide the quiz descriptions
+  $('.quizzy_quiz_desc').hide();
+  
+  // add a click event to the radio buttons' label
+  $('.quizzy_quiz_lbl').click(function () {
+    // the user clicked on one of the options
+    // get the id
+    var thisId = $(this).attr('id');
+    
+    // hack out the index and set quizzyState.selectedOption to it
+    var selQuiz = thisId.substring(thisId.lastIndexOf("lbl") + 3) * 1;
+    
+    // make sure that the radio button is selected
+    $('#quizzy_quiz_opt' + selQuiz).click();
   });
   
-  $.loading.pulse = quizzyState.loadingPulse;
-  $.loading.align = quizzyState.loadingAlign;
-  // $.loading.delay = quizzyState.loadingDelay;
-  $.loading.onAjax = true;	// don't change this!
-  
-  // reset all the variables
-  quizzyState.file = "";
-  quizzyState.index = -1;
-  quizzyState.currentQuestion = -1;
-  quizzyState.score = 0;
-  quizzyState.selectedOption = 0;
-  quizzyState.correctOption = -1;
-  quizzyState.addScore = 0;
-
-  // put up a loading message
-  $('#quizzy').loading(true);
-
-  // load the quiz list
-  // the buttons have onClick events so they're handled up there
-  /*$.get('quizzy/serveQuizzes.php', function(data){
-    $('#quizzy_load').html(data);
+  // add another click event handler to the radio buttons
+  $('.quizzy_quiz_opt').click(function() {
+    // the user clicked on one of the options
+    // get the id
+    var thisId = $(this).attr('id');
     
-    // hide the descriptions
-    $('.quizzy_quiz_desc').hide();
+    // hack out the index and set quizzyState.selectedOption to it
+    var selQuiz = thisId.substring(thisId.lastIndexOf("opt") + 3) * 1;
     
-    // add a click event to the radio buttons' label
-    $('.quizzy_quiz_lbl').click(function () {
-      // the user clicked on one of the options
-      // get the id
-      var thisId = $(this).attr('id');
-      
-      // hack out the index and set quizzyState.selectedOption to it
-      var selQuiz = thisId.substring(thisId.lastIndexOf("lbl") + 3) * 1;
-      
-      // make sure that the radio button is selected
-      $('#quizzy_quiz_opt'+selQuiz).click();
-    });
-    
-    // add another click event handler to the radio buttons
-    $('.quizzy_quiz_opt').click(function() {
-      // the user clicked on one of the options
-      // get the id
-      var thisId = $(this).attr('id');
-      
-      // hack out the index and set quizzyState.selectedOption to it
-      var selQuiz = thisId.substring(thisId.lastIndexOf("opt") + 3) * 1;
-      
-      // slide up all other descriptions while sliding down the correct one
-      $('.quizzy_quiz_desc[id!=quizzy_quiz_desc'+selQuiz+']').slideUp(slideSpeed, function() {
-        $('#quizzy_quiz_desc' + selQuiz).slideDown(slideSpeed);
+    // Slide the explanation for the selected quiz down.
+    // If there is more than one quiz in the list, slide all the others up first
+    if ($('.quizzy_quiz_desc[id!=quizzy_quiz_desc' + selQuiz + ']').length > 0) {
+      $('.quizzy_quiz_desc[id!=quizzy_quiz_desc' + selQuiz + ']').slideUp(quizzyState.slideSpeed, function() {
+        $('#quizzy_quiz_desc' + selQuiz).slideDown(quizzyState.slideSpeed);
       });
-    });
-    
-    // set the click event on the submit button
-    $('#quizzy_start_b').click(startQuiz);
-  });*/
+    }
+    else
+      $('#quizzy_quiz_desc' + selQuiz).slideDown(quizzyState.slideSpeed);
+  });
+  
+  // set the click event on the submit button
+  $('#quizzy_start_b').click(startQuiz);
 
 });
 
-/*
-// requests a quiz setup from the server
+
+/**
+ * Called when the user clicks the 'begin quiz' button, this function will
+ * load the requested quiz using AJAX.
+ * 
+ * @author Joe Balough
+ */
 function startQuiz()
 {
   // make sure that there's a quiz that is selected
@@ -127,15 +121,18 @@ function startQuiz()
   // put up throbber
   $('#quizzy').loading(true);
 
-  // parameters passed in GET:
-  //   _GET['quizzyState.file']       xml file to open
-  //   _GET['quizzyState.index']      index of requested quiz in xml file
-  $.get('quizzy/serveQuiz.php', {quizzyState.file: quizzyState.file, quizzyState.index: quizzyState.index}, function(data){
+  // Request the quiz from quiz.php. That returns a JSON formatted output containing the following variables:
+  //   numQuestions  - The number of questions in this quiz
+  //   quizTitle     - The name of the quiz
+  //   quiz          - The HTML formatted string representing the start of the requested quiz
+  $.getJSON('quizzy/quizzy.php', {quizzy_op: 'quiz', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.index}, function(data){
     // put up throbber
     $('#quizzy').loading(true);
     
     // we got our quiz datas, just dump them into the correct div
-    $('#quizzy_quiz').html(data);
+    $('#quizzy_quiz').html(data.quiz);
+    quizzyState.numQuestions = data.numQuestions;
+    quizzyState.quizTitle = data.quizTitle;
     
     // we also got a quizzyState.numQuestions set, need to resize a few divs.
     $('#quizzy_c').width((quizzyState.numQuestions + 3) * quizzyState.width);
@@ -147,19 +144,18 @@ function startQuiz()
   });
 }
 
-// requests a question from the server
+/**
+ * Called when the user clicks on the next button at the bottom of the quiz
+ * @author Joe Balough
+ */
 function requestNextQuestion()
 {
   $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').fadeOut(fadeSpeed, function() {
     $(this).attr('disabled', true);
   });
 
-  // parameters passed in GET:
-  //   _GET["quizzyState.file"]       xml file to open
-  //   _GET["quizzyState.index"]      index of requested quiz in xml file
-  //   _GET["questNo"]        question to return [first question is number 0]
-  //   _GET['score']          score the player currently has (needed for serving last page)
-  $.get('quizzy/serveQuestion.php', {quizzyState.file: quizzyState.file, quizzyState.index: quizzyState.index, questNo: (quizzyState.currentQuestion + 1), score: quizzyState.score}, function(data){
+  // Request the question data from quizzy.php. It will return an HTML string that represents the question.
+  $.get('quizzy/quizzy.php', {quizzy_op: 'question', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.index, quest_no: (quizzyState.currentQuestion + 1), score: quizzyState.score}, function(data){
     // we are now on the next question
     quizzyState.currentQuestion++;
     
@@ -186,11 +182,11 @@ function requestNextQuestion()
       quizzyState.selectedOption = thisId.substring(thisId.lastIndexOf("opt") + 3) * 1;
       
       // make sure that the radio button is selected
-      $('#quizzy_q'+quizzyState.currentQuestion+'_opt'+quizzyState.selectedOption+'_b').attr("checked", "checked");
+      $('#quizzy_q' + quizzyState.currentQuestion + '_opt' + quizzyState.selectedOption + '_b').attr("checked", "checked");
     });
     
     // add the click event to the check and next buttons
-    $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click(checkQuestion);
+    //$('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click(checkQuestion);
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').click(function (){
       $('#quizzy').loading(true);   
       $(this).unbind();
@@ -209,7 +205,7 @@ function requestNextQuestion()
     });
   });
 }
-
+/*
 function checkQuestion()
 { 
   // the user has quizzyState.selectedOption selected on question quizzyState.currentQuestion
@@ -232,11 +228,11 @@ function checkQuestion()
 
   // get the explanation for this option, it will set the quizzyState.correctOption variable
   // parameters passed in GET:
-  //   _GET['quizzyState.file']       xml file to open
+  //   _GET['quizzyState.quizFile']       xml file to open
   //   _GET['quizzyState.index']      index of requested quiz in xml file
   //   _GET['questNo']        question to return (first is 1)
   // 	_GET['']				 the option for which to retrieve the explanation
-  $.get('quizzy/serveExplanation.php',  {quizzyState.file: quizzyState.file, quizzyState.index: quizzyState.index, questNo: quizzyState.currentQuestion, sel_opt: quizzyState.selectedOption}, function(data) {
+  $.get('quizzy/serveExplanation.php',  {quizzyState.file: quizzyState.quizFile, quizzyState.index: quizzyState.index, questNo: quizzyState.currentQuestion, sel_opt: quizzyState.selectedOption}, function(data) {
     
     // have the data returned by that ajax query, set the proper div info
     $('#quizzy_q' + quizzyState.currentQuestion + '_exp').html(data);
@@ -311,7 +307,7 @@ function restartQuizzy()
   var secondRatio = 1.0 - firstRatio;
 
   // reset all the state variables
-  quizzyState.file = "";
+  quizzyState.quizFile = "";
   quizzyState.index = -1;
   quizzyState.currentQuestion = -1;
   quizzyState.score = 0;
