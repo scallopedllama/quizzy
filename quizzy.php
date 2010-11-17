@@ -54,6 +54,10 @@
    * @author Joe Balough
    */
   switch ($_GET['quizzy_op']) {
+  
+    case 'config':
+      serve_config();
+      break;
     
     case 'quizzes':
       serve_quizzes();
@@ -74,6 +78,7 @@
   
   // There shouldn't be any code below to run but this is here just in case.
   return;
+  
   
   /**
    *  Quiz XML file opening and parsing
@@ -96,6 +101,17 @@
     $quiz_xml = simplexml_load_file($quiz_file);
     $quiz = $quiz_xml->quiz[$quiz_index];
     return $quiz;
+  }
+  
+  
+  /**
+   * The serve_config function simply returns the javaScript variables in JSON format.
+   * 
+   * @return JSON formatted string containing all the javaScript variables
+   * @author Joe Balough
+   */
+  function serve_config() {
+    return json_encode($quizzy_js_variables);
   }
 
   
@@ -341,7 +357,7 @@
   
   /**
    * The serve_explanation function will return the HTML explanation for the requested
-   * question and option. Its return is formatted in JSON including several variables.
+   * question and option. Its return is formatted in  including several variables.
    * 
    * @param string $_GET['quizzy_file']
    *   The filename of the xml file containing the currently running quiz
