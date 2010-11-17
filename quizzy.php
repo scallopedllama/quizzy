@@ -16,11 +16,8 @@
    * You should have received a copy of the GNU Affero General Public 
    * License along with quizzy. If not, see <http://www.gnu.org/licenses/>.
    */
-
-
-  // Global variables:
-  // This string represents where this quiz's pictures should be found
-  $pic_dir = $quizzy_cwd . '/' . $quiz_folder . '/' . $pic_folder . '/';
+  
+  include_once $quizzy_cwd . '/' . 'quizzy_config.php';
 
   /**
    * Default behavior: Just add the quizzy container
@@ -29,15 +26,23 @@
   
   if (!isset($_GET['quizzy_op']) || empty($_GET['quizzy_op'])) {
     // Wrapper for everything in the quiz (overflow: hidden)
-    echo '<div id="quizzy" style="width: ' . $quizzy_quiz_width . 'px; height: ' . $quizzy_quiz_height . 'px">';
+    $output = '<div id="quizzy" style="width: ' . $quizzy_quiz_width . 'px; height: ' . $quizzy_quiz_height . 'px">';
     // Wrapper that contains two panes: quiz select screen on left and the selected quiz on right
-    echo '<div id="quizzy_c" style="width: ' . ($quizzy_quiz_width * 3) . 'px">';
+    $output .= '<div id="quizzy_c" style="width: ' . ($quizzy_quiz_width * 3) . 'px">';
     // The quiz select wrapper (the left side above)
-    echo '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px"></div>';
+    $output .= '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px">';
+    
+    // Drop the available quizzes in there
+    $output .= serve_quizzes();
+    $output .= '</div>';
+    
     // And the quiz wrapper (the right side above)
-    echo '<div id="quizzy_quiz" style="width: ' . ($quizzy_quiz_width * 3) . 'px"></div>';
-    echo '</div>';
-    echo '</div>';
+    $output .= '<div id="quizzy_quiz" style="width: ' . ($quizzy_quiz_width * 3) . 'px"></div>';
+    $output .= '</div>';
+    $output .= '</div>';
+    
+    // Print the generated output
+    echo $output;
     
     // Nothing else to be done, so simply stop running this script right now.
     return;
@@ -96,6 +101,8 @@
    * @author Joe Balough
    */
   function load_quiz() {
+    global $quizzy_cwd, $quizzy_quiz_folder;
+    
     $quiz_file = $quizzy_cwd . '/' . $quizzy_quiz_folder . '/' . $_GET['quizzy_file'];
     $quiz_index = intval($_GET['quizzy_index']);
     $quiz_xml = simplexml_load_file($quiz_file);
@@ -111,6 +118,7 @@
    * @author Joe Balough
    */
   function serve_config() {
+    global $quizzy_js_variables;
     return json_encode($quizzy_js_variables);
   }
 
@@ -123,8 +131,10 @@
    * @author Joe Balough
    */
   function serve_quizzes() {
+    global $quizzy_cwd, $quizzy_quiz_folder, $quizzy_pick_quiz_message, $quizzy_pic_dir;
+    
     // Open the quizzes dir
-    $quiz_dir = dir($quizFolder);
+    $quiz_dir = dir($quizzy_cwd . '/' . $quizzy_quiz_folder);
 
     // Begin formatting the list
     $output = '<div class="quizzy_load_body">';
@@ -140,19 +150,19 @@
         continue;
       
       // Open that file and parse its xml
-      $filename = $cwd.'/'.$quizFolder.'/'.$file;
+      $filename = $quizzy_cwd . '/' . $quizzy_quiz_folder . '/' . $file;
       $quiz_xml= simplexml_load_file($filename);
       
       // Generate a list of all the quizzes in this xml file
       $quiz_no=0;
-      foreach ($quiz_xml->quiz as $cur_quiz){
+      foreach ($quiz_xml->quiz as $cur_quiz) {
         $output .= '<p>';
         $output .= '<input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt' . $file_no . '" onClick="quizFile = \'' . basename($filename) . '\'; quizIndex = ' . $quiz_no . ';" name="quizzy_quiz_sel">';
         $output .= '<label class="quizzy_quiz_lbl" id="quizzy_quiz_lbl' . $file_no . '">' . $cur_quiz->title . '</label>';
         
         // Add an image after the label if one was set
         if (isset($cur_quiz->img)) {
-          $output .= '<img src="' . $pic_dir . $cur_quiz->img['src'] . '" alt="' . $cur_quiz->img['alt'] . '">'; 
+          $output .= '<img src="' . $quizzy_pic_dir . $cur_quiz->img['src'] . '" alt="' . $cur_quiz->img['alt'] . '">'; 
         }
         
         // Add a description if one was set
@@ -162,7 +172,7 @@
           
           // Add an image to the description if one was set
           if (isset($cur_quiz->description->img)) { 
-            $output .= '<img src="' . $pic_dir . $cur_quiz->description->img['src'] . '" alt="' . $cur_quiz->description->img['alt'] . '" >';
+            $output .= '<img src="' . $quizzy_pic_dir . $cur_quiz->description->img['src'] . '" alt="' . $cur_quiz->description->img['alt'] . '" >';
           }
           
           // Description text
@@ -197,6 +207,8 @@
    * @author Joe Balough
    */
   function serve_quiz() {
+    global $quizzy_quiz_width;
+    
     // All the following variable is returned as JSON output.
     $output = array();
 
@@ -234,6 +246,8 @@
    * @author Joe Balough
    */
   function serve_question() {
+    global $quizzy_end_quiz_message, $quizzy_pic_dir;
+    
     // What will be outputted
     $output = '';
 
@@ -286,7 +300,7 @@
       $output .= '<p>Grade: <span class="quizzy_result_grade quizzy_result_grade_' . $score_range->grade . '">' . $score_range->grade . '</span> (' . sprintf('%.1f%%', $percentage) . ')</p>';
       // Add picture if defined
       if (isset($score_range->img)) {
-        $output .= '<div class="quizzy_result_img"><img src="' . $pic_dir . $score_range->img['src'] . '" alt="' . $score_range->img['alt'] . '" ></div>';
+        $output .= '<div class="quizzy_result_img"><img src="' . $quizzy_pic_dir . $score_range->img['src'] . '" alt="' . $score_range->img['alt'] . '" ></div>';
       }
       
       $output .= '<p class="quizzy_result_rank quizzy_result_rank_' . $score_range->rank . '">' . $score_range->rank . '</p>';
@@ -304,7 +318,7 @@
     
     // Picture goes first for the float: right business
     if (isset( $quest->img )) {
-      $output .= '<img src="' . $pic_dir . $quest->img['src'] . '" alt="' . $quest->img['alt'] . '">';
+      $output .= '<img src="' . $quizzy_pic_dir . $quest->img['src'] . '" alt="' . $quest->img['alt'] . '">';
     }
     
     $output .= '<p>' . $quest->text . '</p>';
@@ -326,7 +340,7 @@
       
       // Picture for label if exists
       if (isset($opt->img)) {
-        $output .= '<img src="' . $pic_dir . $opt->img['src'] . '" alt="' . $opt->img['alt'] . '">';
+        $output .= '<img src="' . $quizzy_pic_dir . $opt->img['src'] . '" alt="' . $opt->img['alt'] . '">';
       }
       
       // Span that will be filled with the option's score after the user clicks 'check score'
