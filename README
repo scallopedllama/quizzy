@@ -1,3 +1,36 @@
+quizzy is a PHP library that uses jQuery to deliver an nice looking animated quiz to visitors to their page
+that is distributed under the GNU Affero General Public License v3. This means that you are free to use quizzy
+as you desire on any of your pages. However, if you make any changes to quizzy, they must be made available.
+It loads quiz data from XML files stored on the server and loads all the data in small increments using AJAX.
+This decreases the amount of data that needs to be loaded with the page to add the quiz and prevents users
+from cheating by simply looking at the source of the page. For now, quizzy only supports multiple-choice quizzes
+but will be extended to include select all that apply type questions in the near future. 
+quizzy requires PHP 5 (for tinyxml) with the json extension enabled. 
+
+
+------------------------------------- Instructions for use of quizzy ----------------------------------------------
+
+  0. Make sure that you have the json extension enabled in your php configuration.
+     You may have to edit /etc/php/php.ini and uncomment or add the line 'extension json.so'.
+  1. Extract quizzy and put the 'quizzy' directory into the same folder as your webpage.
+  2. Drop <?php include 'quizzy/quizzy_header.php';?> in your <head> section
+  3. Put <?php include 'quizzy/quizzy.php'; ?> in your <body> section where you want the quiz
+  4. Edit quizzy_config.php to your liking
+  5. Create some quizzes and drop them into $quiz_folder (probably 'quizzy/quizzes/')
+     You can either do this by hand using the XML structure described below or use the quizzyBuilder
+     available at http://quizzy.sf.net/quizzyBuilder
+
+
+------------------------------------------- Browser compatibility -------------------------------------------------
+
+Tested and confirmed working in the following browsers:
+  IE 6*, 7, and 8 (quirks and standards compliant mode)
+  Firefox 1.5, 2, 3, and 3.5
+  Opera* 8, 9, and 10
+  Safari 4 and 5
+  Chrome
+  Konqueror 4.3
+
 IE 6 quirks:
  - loading message does not work (users will not be told when AJAX calls are being loaded)
  - images are constrained by having a width or height set, since max-width & max-height do not work
@@ -7,29 +40,14 @@ Opera quirks:
    right side of the screen (instead of its current location). I have no idea why.
 
 Overall quirks:
- - quizzes with descriptions that have pictures will slide down in an.... odd... fashion. It works, but could
-   look much better. It's being worked on... top bug really. 
- - if you skin the quiz to be position: absolute, loading stops working.
-
-Browser compatibility -- Tested and confirmed working (with above mentioned quirks) in the following browsers:
-  IE 6, 7, and 8 (quirks and standards compliant mode)
-  Firefox 1.5, 2, 3, and 3.5
-  Opera 8, 9, and 10
-  Safari 4 and 5
-  Chrome
-  Konqueror 4.3
+ - Quizzes with descriptions that have pictures will not slide down in a smooth fashion. 
+   This issue is being worked on.
+ - If you skin the quiz to be position: absolute, the jQuery loading plugin stops working.
 
 
-To use: 
-  1. extract quizzy and put the 'quizzy' directory into the same folder as your webpage.
-  2. drop <?php include 'quizzy/quizzy_header.php';?> in your <head> section
-  3. put <?php include 'quizzy/quizzy.php'; ?> in your <body> section where you want the quiz
-  4. edit quizzy_config.php and to your liking
-  5. Create some quizzes and drop them into $quiz_folder (probably 'quizzy/quizzes/')
-  6. Make sure that you have the json extension enabled in your php configuration
 
+----------------------------------------- Quiz XML Formatting --------------------------------------------------
 
-Quiz XML formatting:
 Any line in [square brackets] is optional, lines that have ... are places you can add more of that type
 of element. Any picture you add has to be under the quizzes/[pictures directory] folder.
 See quizzy_config.php.
@@ -69,10 +87,3 @@ See quizzy_config.php.
   </quiz>
   ...
 </quizzes>
-
-
-
-Future features:
- - Non-multiple choice options (text input and checkboxes ftw)     medium
- - compatibility with users who do not have js enabled             dunno
- - Printing stylesheet                                             easy
