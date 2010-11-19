@@ -14,7 +14,7 @@
 ?>
 
 <script type="text/javascript" src="quizzy/lib/jquery-1.4.4.min.js"></script>
-<script type="text/javascript" src="quizzy/lib/jquery.loading.min.js"></script>
+<script type="text/javascript" src="quizzy/lib/jquery.loading.1.6.4.min.js"></script>
 <script type="text/javascript" src="quizzy/quizzy.js" charset="utf-8"></script>
 <link rel="stylesheet" type="text/css" href="quizzy/quizzy.css" charset="utf-8">
 <link rel="stylesheet" type="text/css" href="quizzy/quizzy_skin.css" charset="utf-8">
