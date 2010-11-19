@@ -46,7 +46,7 @@
     $output .= '</div>';
     
     // And the quiz wrapper (the right side above)
-    $output .= '<div id="quizzy_quiz" style="width: ' . ($quizzy_quiz_width * 3) . 'px"></div>';
+    $output .= '<div id="quizzy_quiz" style="width: ' . ($quizzy_quiz_width * 2) . 'px"></div>';
     $output .= '</div>';
     $output .= '</div>';
     
@@ -220,18 +220,21 @@
     
     // All the following variable is returned as JSON output.
     $output = array();
-
+    
+    // Load up the XML file
+    $quiz = load_quiz();
+    $quiz_title = $quiz->title;
+    
     // Find the number of questions and quiz title and add it to the return
     $output['numQuestions'] = count($quiz->question);
-    $output['quizTitle'] = $quiz->title;
 
     // Build the quiz container
     $output['quiz']  = '<div class="quizzy_title">' . $quiz_title . '</div>';
     $output['quiz'] .= '<div id="quizzy_q_c">';
     
     // Every question <div>. Note that we're making one extra for the results page.
-    for ($qi = 0; $qi < $num_questions + 1; $qi++)
-      $output['quiz'] .= '<div class="quizzy_q" id="quizzy_q' . $qi . '" style="width: ' . $quizzy_quiz_width . '">&nbsp;</div>';
+    for ($i = 0; $i < $output['numQuestions'] + 1; $i++)
+      $output['quiz'] .= '<div class="quizzy_q" id="quizzy_q' . $i . '" style="width: ' . $quizzy_quiz_width . '"></div>';
     
     // Close up the quiz div
     $output['quiz'] .= '</div>';
@@ -259,6 +262,9 @@
     
     // What will be outputted
     $output = '';
+    
+    // Load up the XML file
+    $quiz = load_quiz();
 
     // Get the other variables needed by this function
     $question_no = intval($_GET['quest_no']);
@@ -391,10 +397,11 @@
    * @param int $_GET['sel_opt']
    *   The option for which to retrieve the explanation
    * @return JSON formatted output containing the following variables:
-   *     optValues   - An array specifiying how many points each of the options were worth
-   *     addScore    - How many points should be added to the score
-   *     correctOpt  - Which was the best option
-   *     explanation - HTML formatted string representing the explanation text
+   *     optionValues   - An array specifiying how many points each of the options were worth
+   *     addScore       - How many points should be added to the score
+   *     correctOption  - Which was the best option
+   *     explanation    - HTML formatted string representing the explanation text
+   *     bestScore      - Which index is the best possible score
    * @author Joe Balough
    */
   function serve_explanation() {
@@ -415,24 +422,24 @@
     
     // Get how much to add to the score and keep track of the values for the other options
     $output['addScore'] = intval($opt->score);
-    $output['optValues'] = array();
+    $output['optionValues'] = array();
     
     // Figure out what the highest possible score
     $i = 0;
-    $output['best_score'] = 0;
-    $output['correct_opt'] = -1;
+    $output['bestScore'] = 0;
+    $output['correctOption'] = -1;
     foreach($quest->option as $opt)
     {
       $cur_score = intval($opt->score);
       
       // Set the value for this question
-      $output['optValues'][$i] = $cur_score;
+      $output['optionValues'][$i] = $cur_score;
       
       // Replace $output['best_score'] if it's better
-      if($cur_score > $output['best_score'])
+      if($cur_score > $output['bestScore'])
       {
-        $output['best_score'] = $cur_score;
-        $output['correct_opt'] = $i;
+        $output['bestScore'] = $cur_score;
+        $output['correctOption'] = $i;
       }
       
       ++$i;
@@ -440,7 +447,7 @@
     
     // Build explanation text
     if (isset($exp->img)) {
-      $output['explanation'] = '<img src="' . $picDir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
+      $output['explanation'] = '<img src="' . $pic_dir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
     }
     $output['explanation'] .= '<p>' . $exp->text . '</p>';
     

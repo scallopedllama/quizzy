@@ -18,7 +18,7 @@
 // current quiz state
 quizzyState = new Object;
 quizzyState.quizFile = "";
-quizzyState.index = -1;
+quizzyState.quizIndex = -1;
 quizzyState.currentQuestion = -1;
 quizzyState.score = 0;
 
@@ -31,7 +31,7 @@ quizzyState.bestScore = 0;
 quizzyState.optionValues;
 // these are set at other times by dropped in php code from ajax calls
 quizzyState.numQuestions = -1;
-quizzyState.width = -1;
+quizzyState.quizWidth = -1;
 // NOTE: This variable isn't used in here anywhere.
 quizzyState.height = -1;
 
@@ -56,8 +56,9 @@ $(document).ready(function() {
     $.loading.onAjax = true;  // don't change this!
   });
 
-  // hide the quiz descriptions
+  // hide the quiz descriptions, uncheck all of the options
   $('.quizzy_quiz_desc').hide();
+  $('.quizzy_quiz_opt').attr('checked', false);
   
   // add a click event to the radio buttons' label
   $('.quizzy_quiz_lbl').click(function () {
@@ -99,7 +100,7 @@ $(document).ready(function() {
 
 
 /**
- * Called when the user clicks the 'begin quiz' button, this function will
+ * Event handler for the bbegin quiz button, this function will
  * load the requested quiz using AJAX.
  * 
  * @author Joe Balough
@@ -107,37 +108,35 @@ $(document).ready(function() {
 function startQuiz()
 {
   // make sure that there's a quiz that is selected
-  if(quizzyState.index < 0)
+  if(quizzyState.quizIndex < 0)
     return;
-    
+  
   // unbind the click events for this button
   $(this).unbind();
 
   // globals were already set when the user clicked on the radio buttons
 
   // fade out quiz options
-  $('.quizzy_quiz_b').fadeOut(fadeSpeed);
+  $('.quizzy_quiz_b').fadeOut(quizzyState.fadeSpeed);
 
   // put up throbber
   $('#quizzy').loading(true);
 
   // Request the quiz from quiz.php. That returns a JSON formatted output containing the following variables:
   //   numQuestions  - The number of questions in this quiz
-  //   quizTitle     - The name of the quiz
   //   quiz          - The HTML formatted string representing the start of the requested quiz
-  $.getJSON('quizzy/quizzy.php', {quizzy_op: 'quiz', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.index}, function(data){
+  $.getJSON('quizzy/quizzy.php', {quizzy_op: 'quiz', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.quizIndex}, function(data){
     // put up throbber
     $('#quizzy').loading(true);
     
     // we got our quiz datas, just dump them into the correct div
     $('#quizzy_quiz').html(data.quiz);
     quizzyState.numQuestions = data.numQuestions;
-    quizzyState.quizTitle = data.quizTitle;
     
     // we also got a quizzyState.numQuestions set, need to resize a few divs.
-    $('#quizzy_c').width((quizzyState.numQuestions + 3) * quizzyState.width);
-    $('#quizzy_quiz').width((quizzyState.numQuestions + 2) * quizzyState.width);
-    $('.quizzy_title').width(quizzyState.width);
+    $('#quizzy_c').width((quizzyState.numQuestions + 3) * quizzyState.quizWidth);
+    $('#quizzy_quiz').width((quizzyState.numQuestions + 2) * quizzyState.quizWidth);
+    $('.quizzy_title').width(quizzyState.quizWidth);
     
     // now request the next question
     requestNextQuestion();
@@ -145,25 +144,25 @@ function startQuiz()
 }
 
 /**
- * Called when the user clicks on the next button at the bottom of the quiz
+ * Event handler for the next button at the bottom of the quiz
  * @author Joe Balough
  */
 function requestNextQuestion()
 {
-  $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').fadeOut(fadeSpeed, function() {
+  $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').fadeOut(quizzyState.fadeSpeed, function() {
     $(this).attr('disabled', true);
   });
 
   // Request the question data from quizzy.php. It will return an HTML string that represents the question.
-  $.get('quizzy/quizzy.php', {quizzy_op: 'question', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.index, quest_no: (quizzyState.currentQuestion + 1), score: quizzyState.score}, function(data){
+  $.get('quizzy/quizzy.php', {quizzy_op: 'question', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.quizIndex, quest_no: (quizzyState.currentQuestion + 1), score: quizzyState.score}, function(data){
     // we are now on the next question
     quizzyState.currentQuestion++;
     
-    // set necessary styles
-    $('.quizzy_q').width(quizzyState.width);
-    
     // dump the recieved data into the correct question div
     $("#quizzy_q" + quizzyState.currentQuestion).html(data);
+    
+    // set necessary styles
+    $('.quizzy_q').width(quizzyState.quizWidth);
 
     // hide and disable the check and next buttons, the explanation div, and the value spans
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', true).hide();
@@ -186,7 +185,7 @@ function requestNextQuestion()
     });
     
     // add the click event to the check and next buttons
-    //$('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click(checkQuestion);
+    $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click(checkQuestion);
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').click(function (){
       $('#quizzy').loading(true);   
       $(this).unbind();
@@ -195,17 +194,23 @@ function requestNextQuestion()
     
     // slide quizzy_c to the right if we're on question 0, quizzy_q_c otherwise
     var scrollSel = (quizzyState.currentQuestion == 0) ? '#quizzy_c' : '#quizzy_q_c';
-    var scrollAmt = (quizzyState.currentQuestion == 0) ? (-quizzyState.width * (quizzyState.currentQuestion + 1)) : (-quizzyState.width * (quizzyState.currentQuestion));
-    $(scrollSel).animate({left: scrollAmt + "px"}, slideSpeed, animateStyle, function(){
+    var scrollAmt = (quizzyState.currentQuestion == 0) ? (-quizzyState.quizWidth * (quizzyState.currentQuestion + 1)) : (-quizzyState.quizWidth * (quizzyState.currentQuestion));
+    $(scrollSel).animate({left: scrollAmt + "px"}, quizzyState.slideSpeed, quizzyState.animateStyle, function(){
       // uncheck the last question's buttons
       $('.quizzy_q_opt_b').attr('checked', false);
       
       // fade in the check button
-      $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(fadeSpeed);
+      $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
     });
   });
 }
-/*
+
+
+/**
+ * Event handler for the Check Answer button. Queries quizzy.php for the explanation and score
+ * for the current question and quiz.
+ * @author Joe Balough
+ */
 function checkQuestion()
 { 
   // the user has quizzyState.selectedOption selected on question quizzyState.currentQuestion
@@ -219,7 +224,7 @@ function checkQuestion()
   $(this).unbind();
 
   // hide the button
-  $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').fadeOut(fadeSpeed, function() {
+  $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').fadeOut(quizzyState.fadeSpeed, function() {
     $(this).attr('disabled', true);
   });
 
@@ -227,15 +232,20 @@ function checkQuestion()
   $('#quizzy').loading(true);
 
   // get the explanation for this option, it will set the quizzyState.correctOption variable
-  // parameters passed in GET:
-  //   _GET['quizzyState.quizFile']       xml file to open
-  //   _GET['quizzyState.index']      index of requested quiz in xml file
-  //   _GET['questNo']        question to return (first is 1)
-  // 	_GET['']				 the option for which to retrieve the explanation
-  $.get('quizzy/serveExplanation.php',  {quizzyState.file: quizzyState.quizFile, quizzyState.index: quizzyState.index, questNo: quizzyState.currentQuestion, sel_opt: quizzyState.selectedOption}, function(data) {
+  // information received in JSON:
+  //     optionValues   - An array specifiying how many points each of the options were worth
+  //     addScore       - How many points should be added to the score
+  //     correctOption  - Which was the best option
+  //     explanation    - HTML formatted string representing the explanation text
+  //     bestScore      - Which index is the best possible score
+  $.getJSON('quizzy/quizzy.php',  {quizzy_op: 'explanation', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.quizIndex, quest_no: quizzyState.currentQuestion, sel_opt: quizzyState.selectedOption}, function(data) {
+    // Merge the data object into the quizzyState object
+    for (var key in data) {
+      quizzyState[key] = data[key];
+    }
     
     // have the data returned by that ajax query, set the proper div info
-    $('#quizzy_q' + quizzyState.currentQuestion + '_exp').html(data);
+    $('#quizzy_q' + quizzyState.currentQuestion + '_exp').html(data.explanation);
     // that should have set the quizzyState.correctOption and add variables
     
     // add to quizzyState.score
@@ -266,7 +276,7 @@ function checkQuestion()
       
       $('#quizzy_q' + quizzyState.currentQuestion + '_opt' + i + '_val').html('<span class="' + useClass + '">' + toWrite + '</span>');
     }
-    $('.quizzy_q_opt_val').fadeIn(fadeSpeed);
+    $('.quizzy_q_opt_val').fadeIn(quizzyState.fadeSpeed);
     
     
     // wait slideUpWait millisec
@@ -276,29 +286,35 @@ function checkQuestion()
       var pickedSel = '[id!=quizzy_q' + quizzyState.currentQuestion + '_opt' + quizzyState.selectedOption + ']';
       if(quizzyState.addScore == quizzyState.bestScore)
         correctSel = '';
-      $('.quizzy_q_opt' + correctSel + pickedSel).slideUp(slideSpeed);
+      $('.quizzy_q_opt' + correctSel + pickedSel).slideUp(quizzyState.slideSpeed);
       
       // wait expFadeInWait millisec
       setTimeout(function() {
         
         // fade in explanation
-        $('#quizzy_q' + quizzyState.currentQuestion + '_exp').fadeIn(fadeSpeed);
+        $('#quizzy_q' + quizzyState.currentQuestion + '_exp').fadeIn(quizzyState.fadeSpeed);
         
         // wait nextFadeInWait millisec
         setTimeout(function() {
           
           // fade in next button
-          $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').attr('disabled', false).fadeIn(fadeSpeed);
+          $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
           
-        }, nextFadeInWait); // wait nextFadeInWait ms to fade in the next button
+        }, quizzyState.nextFadeInWait); // wait nextFadeInWait ms to fade in the next button
         
-      }, expFadeInWait); 		// wait expFadeInWait ms to fade in explanation
+      }, quizzyState.expFadeInWait); 		// wait expFadeInWait ms to fade in explanation
       
-    }, slideUpWait); 			// wait scrollupwait ms to scroll up all but best answer
+    }, quizzyState.slideUpWait); 			// wait scrollupwait ms to scroll up all but best answer
     
   });
 }
 
+
+/**
+ * Event handler for the Restart Quiz button on the last page of any quiz.
+ * It resets the state variables and scrolls everything back to the quiz select page.
+ * @author Joe Balough
+ */
 function restartQuizzy()
 {
   // figure out how much of the animation is in scrolling the questions back
@@ -308,7 +324,7 @@ function restartQuizzy()
 
   // reset all the state variables
   quizzyState.quizFile = "";
-  quizzyState.index = -1;
+  quizzyState.quizIndex = -1;
   quizzyState.currentQuestion = -1;
   quizzyState.score = 0;
   quizzyState.selectedOption = 0;
@@ -321,18 +337,17 @@ function restartQuizzy()
   $('.quizzy_quiz_desc').hide();
 
   // scroll the quizzy_q_c back to the start
-  $('#quizzy_q_c').animate({left: "0px"}, firstRatio * restartSpeed, animateStyle, function(){
+  $('#quizzy_q_c').animate({left: "0px"}, firstRatio * quizzyState.restartSpeed, quizzyState.animateStyle, function(){
     
     // scroll the quizzy_c back to the start
-    $('#quizzy_c').animate({left: "0px"}, secondRatio * restartSpeed, animateStyle, function(){
+    $('#quizzy_c').animate({left: "0px"}, secondRatio * quizzyState.restartSpeed, quizzyState.animateStyle, function(){
 
       // reset the click event on the submit button
       $('#quizzy_start_b').click(startQuiz);
       
       // fade the quiz select buttons back in
-      $('.quizzy_quiz_b').fadeIn(fadeSpeed);
+      $('.quizzy_quiz_b').fadeIn(quizzyState.fadeSpeed);
       
     }); // quizzy_c
   }); // quizzy_q_c
 }
-*/
