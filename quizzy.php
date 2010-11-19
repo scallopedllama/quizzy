@@ -405,6 +405,8 @@
    * @author Joe Balough
    */
   function serve_explanation() {
+    global $quizzy_pic_dir;
+    
     // The output array that will eventually be passed to json_encode.
     $output = array();
     
@@ -447,7 +449,7 @@
     
     // Build explanation text
     if (isset($exp->img)) {
-      $output['explanation'] = '<img src="' . $pic_dir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
+      $output['explanation'] = '<img src="' . $quizzy_pic_dir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
     }
     $output['explanation'] .= '<p>' . $exp->text . '</p>';
     
