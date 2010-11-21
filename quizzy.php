@@ -252,77 +252,24 @@
    *   The quiz index in that file (first quiz is index 0)
    * @param int $_GET['quest_no']
    *   the question to return (first is 0)
-   * @param int $_GET['score']
-   *   The score the player currently has (needed for serving last page)
    * @return HTML encoded string that represents the current question
    * @author Joe Balough
    */
   function serve_question() {
-    global $quizzy_end_quiz_message, $quizzy_pic_dir;
+    global $quizzy_pic_dir;
     
     // What will be outputted
     $output = '';
     
     // Load up the XML file
     $quiz = load_quiz();
-
-    // Get the other variables needed by this function
+    
     $question_no = intval($_GET['quest_no']);
-    $score = intval($_GET['score']);
 
     // Check the bounds on the requested question number. If it's larger than the nubmer of questions in the quiz, serve up a results page.
     if ($question_no >= count($quiz->question))
     {
-      // Find the max possible score for the quiz
-      // Check each question
-      $max_score = 0;
-      foreach ($quiz->question as $quest) {
-        $quest_max = 0;
-        
-        // And each option in those questions
-        foreach ($quest->option as $opt) {
-        
-          // Find the highest scoring option
-          if (intval($opt->score) > $quest_max)
-            $quest_max = $opt->score;
-        }
-        // Add the highest scoring option to the max_score
-        $max_score += intval($quest_max);
-      }
-      
-      // Begin formatting the output
-      $output .= '<div class="quizzy_result">';
-      $output .= '<h1>' . $quizzy_end_quiz_message . '</h1>';
-      $output .= '<p>You scored <span class="quizzy_result_score">' . $score . '</span> out of <span class="quizzy_result_max">' . $max_score . '</span> possible points!</p>';
-
-      // Calculate a percentage score, then use the grading information in the xml data to put some more stuff up
-      $percentage = ($score / $max_score) * 100;
-
-      // Find the correct score range
-      $score_range = NULL;
-      foreach ($quiz->grading->range as $range) {
-        // Drop the range that starts a 0 to -1 so that it WILL be less than the percentage
-        if (intval($range['start']) == 0) $range['start'] = -1;
-        
-        // Check the range
-        if (intval($range['start']) < $percentage && intval($range['end']) >= $percentage) {
-          $score_range = $range;
-          break;
-        }
-      }
-
-      // Finish up the output with the grading information
-      $output .= '<p>Grade: <span class="quizzy_result_grade quizzy_result_grade_' . $score_range->grade . '">' . $score_range->grade . '</span> (' . sprintf('%.1f%%', $percentage) . ')</p>';
-      // Add picture if defined
-      if (isset($score_range->img)) {
-        $output .= '<div class="quizzy_result_img"><img src="' . $quizzy_pic_dir . $score_range->img['src'] . '" alt="' . $score_range->img['alt'] . '" ></div>';
-      }
-      
-      $output .= '<p class="quizzy_result_rank quizzy_result_rank_' . $score_range->rank . '">' . $score_range->rank . '</p>';
-      $output .= '<div class="quizzy_result_foot"><input type="submit" onclick="restartQuizzy();" value="Do a different Quiz"></div>';
-      $output .= '</div>';
-      
-      return $output;
+      return serve_results($quiz);
     }
 
     // Get the requested question
@@ -382,7 +329,76 @@
     
     return $output;
   }
-   
+  
+  
+  /**
+   * The serve_results function will return the HTML that represents the results screen to be
+   * presented to the user for finishing the quiz.
+   *
+   * @param tinyXML object &$quiz
+   *   The tinyXML object representing the quiz
+   * @param int $_GET['score']
+   *   The score the player currently has (needed for serving last page)
+   * @return HTML encoded string that represents the current question
+   * @author Joe Balough
+   */
+  function serve_results($quiz) {
+    global $quizzy_end_quiz_message, $quizzy_pic_dir;
+    $output = '';
+    
+    // Find the max possible score for the quiz
+    // Check each question
+    $max_score = 0;
+    foreach ($quiz->question as $quest) {
+      $quest_max = 0;
+      
+      // And each option in those questions
+      foreach ($quest->option as $opt) {
+      
+        // Find the highest scoring option
+        if (intval($opt->score) > $quest_max)
+          $quest_max = $opt->score;
+      }
+      // Add the highest scoring option to the max_score
+      $max_score += intval($quest_max);
+    }
+    
+    // Begin formatting the output
+    $score = intval($_GET['score']);
+    $output .= '<div class="quizzy_result">';
+    $output .= '<h1>' . $quizzy_end_quiz_message . '</h1>';
+    $output .= '<p>You scored <span class="quizzy_result_score">' . $score . '</span> out of <span class="quizzy_result_max">' . $max_score . '</span> possible points!</p>';
+
+    // Calculate a percentage score, then use the grading information in the xml data to put some more stuff up
+    $percentage = ($score / $max_score) * 100;
+
+    // Find the correct score range
+    $score_range = NULL;
+    foreach ($quiz->grading->range as $range) {
+      // Drop the range that starts a 0 to -1 so that it WILL be less than the percentage
+      if (intval($range['start']) == 0) $range['start'] = -1;
+      
+      // Check the range
+      if (intval($range['start']) < $percentage && intval($range['end']) >= $percentage) {
+        $score_range = $range;
+        break;
+      }
+    }
+
+    // Finish up the output with the grading information
+    $output .= '<p>Grade: <span class="quizzy_result_grade quizzy_result_grade_' . $score_range->grade . '">' . $score_range->grade . '</span> (' . sprintf('%.1f%%', $percentage) . ')</p>';
+    // Add picture if defined
+    if (isset($score_range->img)) {
+      $output .= '<div class="quizzy_result_img"><img src="' . $quizzy_pic_dir . $score_range->img['src'] . '" alt="' . $score_range->img['alt'] . '" ></div>';
+    }
+    
+    $output .= '<p class="quizzy_result_rank quizzy_result_rank_' . $score_range->rank . '">' . $score_range->rank . '</p>';
+    $output .= '<div class="quizzy_result_foot"><input type="submit" onclick="restartQuizzy();" value="Do a different Quiz"></div>';
+    $output .= '</div>';
+    
+    return $output;
+  }
+  
   
   /**
    * The serve_explanation function will return the HTML explanation for the requested
