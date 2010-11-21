@@ -336,13 +336,13 @@
    * presented to the user for finishing the quiz.
    *
    * @param tinyXML object &$quiz
-   *   The tinyXML object representing the quiz
+   *   The tinyXML object representing the quiz (passed by reference to save memory)
    * @param int $_GET['score']
    *   The score the player currently has (needed for serving last page)
    * @return HTML encoded string that represents the current question
    * @author Joe Balough
    */
-  function serve_results($quiz) {
+  function serve_results(&$quiz) {
     global $quizzy_end_quiz_message, $quizzy_pic_dir;
     $output = '';
     
