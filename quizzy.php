@@ -29,7 +29,7 @@
   
   
   /**
-   * Default behavior: Just add the quizzy container
+   * Default behavior: Just add the quizzy container and available quizzes
    * @author Joe Balough
    */
   
@@ -146,7 +146,8 @@
     $quiz_dir = dir($quizzy_cwd . '/' . $quizzy_quiz_folder);
 
     // Begin formatting the list
-    $output = '<div class="quizzy_load_body">';
+    //$output  = '<form action="quizzy.php" method="GET" style="height: 100%;">';
+    $output .= '<div class="quizzy_load_body">';
     $output .= '<h1>' . $quizzy_pick_quiz_message . '</h1>';
 
     // Loop through all the files in the directory, making sure they're not . or ..
@@ -197,6 +198,7 @@
     // Finish up output for the quiz list
     $output .= '</div>';
     $output .= '<div class="quizzy_load_foot"><input type="submit" class="quizzy_b" id="quizzy_start_b" value="Start Quiz"></div>';
+    //$output .= '</form>';
     return $output;
   }
   
