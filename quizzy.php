@@ -363,12 +363,24 @@
     foreach ($quiz->question as $quest) {
       $quest_max = 0;
       
-      // And each option in those questions
-      foreach ($quest->option as $opt) {
+      switch ($quiz->question['type']) {
       
-        // Find the highest scoring option
-        if (intval($opt->score) > $quest_max)
-          $quest_max = $opt->score;
+        // Checkbox-style questions' max score is the sum of the scores of all options that are > 0
+        case 'checkbox':
+          foreach ($quest->option as $opt) {
+            if (intval($opt->score) > 0)
+              $quest_max += $opt->score;
+          }
+          break;
+        
+        // Radio-style questions' max score is the greatest score of all the options
+        default:
+        case 'radio':
+          foreach ($quest->option as $opt) {
+            if (intval($opt->score) > $quest_max)
+              $quest_max = $opt->score;
+          }
+          break;
       }
       // Add the highest scoring option to the max_score
       $max_score += intval($quest_max);
