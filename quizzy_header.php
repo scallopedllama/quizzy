@@ -1,6 +1,6 @@
 <?php
-  // Include the configuratino
-  include quizzy_config.php;
+  // Include the configuration
+  include 'quizzy_config.php';
 
   /**
    *  quizzy header
