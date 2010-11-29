@@ -288,33 +288,42 @@
     $output .= '<p>' . $quest->text . '</p>';
     $output .= '</div>';
     
-    // Then add all the options for the question
+    // Add the proper user input for the question
     $output .= '<div class="quizzy_q_opts">';
-    $option_no = 0;
-    foreach ($quest->option as $opt)
-    {
-      // Start paragraph wrapper
-      $output .= '<p class="quizzy_q_opt" id="quizzy_q' . $question_no . '_opt' . $option_no . '">';
+    switch ($quest['type']) {
       
-      // Radio button
-      $output .= '<input type="radio" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
       
-      // Label
-      $output .= '<label>' . $opt->text;
-      
-      // Picture for label if exists
-      if (isset($opt->img)) {
-        $output .= '<img src="' . $quizzy_pic_dir . $opt->img['src'] . '" alt="' . $opt->img['alt'] . '">';
-      }
-      
-      // Span that will be filled with the option's score after the user clicks 'check score'
-      $output .= '<span class="quizzy_q_opt_val" id="quizzy_q' . $question_no . '_opt' . $option_no . '_val"></span>';
-      
-      // Finish off label and paragrah wrappers
-      $output .= '</label>';
-      $output .= '</p>';
+      case 'checkbox':
+      case 'radio':
+      default:
+        $option_no = 0;
+        foreach ($quest->option as $opt)
+        {
+          // Start paragraph wrapper
+          $output .= '<p class="quizzy_q_opt" id="quizzy_q' . $question_no . '_opt' . $option_no . '">';
+          
+          // Radio / check button
+          $input_type = empty($quest['type']) ? 'radio' : $quest['type'];
+          $output .= '<input type="' . $input_type . '" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
+          
+          // Label
+          $output .= '<label>' . $opt->text;
+          
+          // Picture for label if exists
+          if (isset($opt->img)) {
+            $output .= '<img src="' . $quizzy_pic_dir . $opt->img['src'] . '" alt="' . $opt->img['alt'] . '">';
+          }
+          
+          // Span that will be filled with the option's score after the user clicks 'check score'
+          $output .= '<span class="quizzy_q_opt_val" id="quizzy_q' . $question_no . '_opt' . $option_no . '_val"></span>';
+          
+          // Finish off label and paragrah wrappers
+          $output .= '</label>';
+          $output .= '</p>';
 
-      $option_no++;
+          $option_no++;
+        }
+        break;
     }
     
     // Add an empty <div> that will be filled with the question's explanation
