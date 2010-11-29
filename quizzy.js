@@ -157,20 +157,6 @@ function requestNextQuestion()
     $('#quizzy_q' + quizzyState.currentQuestion + '_exp').hide();
     $('.quizzy_q_opt_val').hide();
     
-    // add click handlers so that when a user clicks on any first option, it sets quizzyState.selectedOption to 0
-    // and if they click on any 2nd option, it sets quizzyState.selectedOption to 1, etc.
-    $('.quizzy_q_opt').click(function (){
-      // the user clicked on one of the options
-      // get the id
-      var thisId = $(this).attr('id');
-      
-      // hack out the index and set quizzyState.selectedOption to it
-      quizzyState.selectedOption = thisId.substring(thisId.lastIndexOf("opt") + 3) * 1;
-      
-      // make sure that the radio button is selected
-      $('#quizzy_q' + quizzyState.currentQuestion + '_opt' + quizzyState.selectedOption + '_b').attr("checked", "checked");
-    });
-    
     // add the click event to the check and next buttons
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click(checkQuestion);
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').click(function (){
@@ -217,7 +203,7 @@ function checkQuestion()
 
   // put up throbber
   $('#quizzy').loading(true);
-
+  
   // get the explanation for this option, it will set the quizzyState.correctOption variable
   // information received in JSON:
   //     optionValues   - An array specifiying how many points each of the options were worth
@@ -225,7 +211,14 @@ function checkQuestion()
   //     correctOption  - Which was the best option
   //     explanation    - HTML formatted string representing the explanation text
   //     bestScore      - Which index is the best possible score
-  $.getJSON('quizzy/quizzy.php',  {quizzy_op: 'explanation', quizzy_file: quizzyState.quizFile, quizzy_index: quizzyState.quizIndex, quest_no: quizzyState.currentQuestion, sel_opt: quizzyState.selectedOption}, function(data) {
+  var passingOptions = {
+    quizzy_op: 'explanation', 
+    quizzy_file: quizzyState.quizFile, 
+    quizzy_index: quizzyState.quizIndex, 
+    quest_no: quizzyState.currentQuestion, 
+    sel_opt: $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get(),
+  };
+  $.getJSON('quizzy/quizzy.php', passingOptions , function(data) {
     // Merge the data object into the quizzyState object
     for (var key in data) {
       quizzyState[key] = data[key];

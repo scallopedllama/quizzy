@@ -147,7 +147,7 @@
 
     // Begin formatting the list
     //$output  = '<form action="quizzy.php" method="GET" style="height: 100%;">';
-    $output .= '<div class="quizzy_load_body">';
+    $output = '<div class="quizzy_load_body">';
     $output .= '<h1>' . $quizzy_pick_quiz_message . '</h1>';
 
     // Loop through all the files in the directory, making sure they're not . or ..
@@ -304,7 +304,7 @@
           
           // Radio / check button
           $input_type = empty($quest['type']) ? 'radio' : $quest['type'];
-          $output .= '<input type="' . $input_type . '" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
+          $output .= '<input type="' . $input_type . '" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b quizzy_q' . $question_no . '_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
           
           // Label
           $output .= '<label for="quizzy_q' . $question_no . '_opt' . $option_no . '_b">' . $opt->text;
@@ -361,29 +361,10 @@
     // Check each question
     $max_score = 0;
     foreach ($quiz->question as $quest) {
-      $quest_max = 0;
+      $quest_max = question_best_score($quest);
       
-      switch ($quiz->question['type']) {
-      
-        // Checkbox-style questions' max score is the sum of the scores of all options that are > 0
-        case 'checkbox':
-          foreach ($quest->option as $opt) {
-            if (intval($opt->score) > 0)
-              $quest_max += $opt->score;
-          }
-          break;
-        
-        // Radio-style questions' max score is the greatest score of all the options
-        default:
-        case 'radio':
-          foreach ($quest->option as $opt) {
-            if (intval($opt->score) > $quest_max)
-              $quest_max = $opt->score;
-          }
-          break;
-      }
       // Add the highest scoring option to the max_score
-      $max_score += intval($quest_max);
+      $max_score += $quest_max['max_score'];
     }
     
     // Begin formatting the output
@@ -438,7 +419,7 @@
    * @return JSON formatted output containing the following variables:
    *     optionValues   - An array specifiying how many points each of the options were worth
    *     addScore       - How many points should be added to the score
-   *     correctOption  - Which was the best option
+   *     correctOptions - Which were the best options (array)
    *     explanation    - HTML formatted string representing the explanation text
    *     bestScore      - Which index is the best possible score
    * @author Joe Balough
@@ -452,47 +433,110 @@
     // Load up the quiz
     $quiz = load_quiz();
     
-    // Get those other needed variables
+    // Get the question data
     $quest_no = intval($_GET['quest_no']);
-    $sel_opt = intval($_GET['sel_opt']);
-    
-    // Get the requested question, option, and explanation
     $quest = $quiz->question[$quest_no];
-    $opt = $quest->option[$sel_opt];
-    $exp = $opt->explanation;
+    $sel_opts = array();
     
-    // Get how much to add to the score and keep track of the values for the other options
-    $output['addScore'] = intval($opt->score);
-    $output['optionValues'] = array();
+    // Calculate score stuff first
     
-    // Figure out what the highest possible score
-    $i = 0;
-    $output['bestScore'] = 0;
-    $output['correctOption'] = -1;
-    foreach($quest->option as $opt)
-    {
-      $cur_score = intval($opt->score);
-      
-      // Set the value for this question
-      $output['optionValues'][$i] = $cur_score;
-      
-      // Replace $output['best_score'] if it's better
-      if($cur_score > $output['bestScore'])
-      {
-        $output['bestScore'] = $cur_score;
-        $output['correctOption'] = $i;
-      }
-      
-      ++$i;
+    // Process what the user input according to the question type
+    switch ($quest['type']) {
+      case 'checkbox':
+      case 'radio':
+      default:
+        // Parse the passed array of option ids into an array of tinyXML option nodes
+        foreach ($_GET['sel_opt'] as $sel_opt) {
+          preg_match('/quizzy_q.+_opt(.+)_b/', $sel_opt, $matches);
+          $sel_opts[] = $quest->option[intval($matches[1])];
+        }
+        
+        // Calculate how much to add to the score
+        $output['addScore'] = 0;
+        foreach ($sel_opts as $sel_opt)
+          $output['addScore'] += intval($sel_opt->score);
+        
+        // Use the question_best_score function to find the highest possible score for this question and the correct answers
+        $best_score = question_best_score($quest);
+        $output['bestScore'] = $best_score['max_score'];
+        $output['correctOptions'] = $best_score['correct_options'];
+        
+        // Generate the array of values that each option is worth.
+        $output['optionValues'] = array();
+        foreach($quest->option as $opt)
+          $output['optionValues'][] = intval($opt->score);
+        
+        break;
+    }
+    
+    // Get the explanation properly
+    $exp = NULL;
+    switch ($quest['type']) {
+      case 'checkbox':
+        $exp = $quest->explanation;
+        break;
+      case 'radio':
+      default:
+        $exp = $sel_opts[0]->explanation;
+        break;
     }
     
     // Build explanation text
+    $output['explanation'] = '';
     if (isset($exp->img)) {
-      $output['explanation'] = '<img src="' . $quizzy_pic_dir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
+      $output['explanation'] .= '<img src="' . $quizzy_pic_dir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
     }
     $output['explanation'] .= '<p>' . $exp->text . '</p>';
     
     return json_encode($output);
+  }
+  
+  
+  /**
+   * Returns the highest possible score for the passed question
+   *
+   * @param Object $question
+   *   The question to work on
+   * @return array
+   *   'max_score'       => The highest possible score for this question
+   *   'correct_options' => An array of the 'correct' option indices
+   * @author Joe Balough
+   */
+  function question_best_score(&$quest) {
+    $return = array(
+      'max_score' => 0,
+      'correct_options' => array(),
+    );
+    
+    switch ($quest['type']) {
+      
+      // Checkbox-style questions' max score is the sum of the scores of all options that are > 0
+      case 'checkbox':
+        $i = 0;
+        foreach ($quest->option as $opt) {
+          if (intval($opt->score) > 0) {
+            $return['max_score'] += intval($opt->score);
+            $return['correct_options'][] = $i;
+          }
+          ++$i;
+        }
+        break;
+      
+      // Radio-style questions' max score is the greatest score of all the options
+      default:
+      case 'radio':
+        $i = 0;
+        $quest_max = 0;
+        foreach ($quest->option as $opt) {
+          if (intval($opt->score) > $quest_max) {
+            $return['max_score'] = intval($opt->score);
+            $return['correct_options'][0] = $i;
+          }
+          ++$i;
+        }
+        break;
+    }
+    return $return;
   }
   
 ?>
