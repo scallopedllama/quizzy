@@ -60,19 +60,6 @@ $(document).ready(function() {
   $('.quizzy_quiz_desc').hide();
   $('.quizzy_quiz_opt').attr('checked', false);
   
-  // add a click event to the radio buttons' label
-  $('.quizzy_quiz_lbl').click(function () {
-    // the user clicked on one of the options
-    // get the id
-    var thisId = $(this).attr('id');
-    
-    // hack out the index and set quizzyState.selectedOption to it
-    var selQuiz = thisId.substring(thisId.lastIndexOf("lbl") + 3) * 1;
-    
-    // make sure that the radio button is selected
-    $('#quizzy_quiz_opt' + selQuiz).click();
-  });
-  
   // add another click event handler to the radio buttons
   $('.quizzy_quiz_opt').click(function() {
     // the user clicked on one of the options
