@@ -216,7 +216,7 @@ function checkQuestion()
     quizzy_file: quizzyState.quizFile, 
     quizzy_index: quizzyState.quizIndex, 
     quest_no: quizzyState.currentQuestion, 
-    sel_opt: $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get(),
+    response: $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get(),
   };
   $.getJSON('quizzy/quizzy.php', passingOptions , function(data) {
     // Merge the data object into the quizzyState object
