@@ -481,7 +481,7 @@
         // Switch the optionValues to a × or a ✓ by sorting the array and changing the value to an
         // X if there are 2 scores in the questino and the current option's score is the first one in the array.
         if (!$print_values) {
-          asort($score_values);
+          sort($score_values);
           foreach ($output['optionValues'] as &$option_value) {
             if (count($score_values) == 2 && $option_value == $score_values[0])
               $option_value = '×';
