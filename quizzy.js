@@ -230,42 +230,37 @@ function checkQuestion()
     
     // add to quizzyState.score
     quizzyState.score += quizzyState.addScore;
-    
-    // determine if this question has partial credit
-    var partialCredit = false;
-    for(var i in quizzyState.optionValues)
-      if(quizzyState.optionValues[i] != 0 && quizzyState.optionValues[i] != quizzyState.bestScore)
-        partialCredit = true;
       
     // show the values
     for( i in quizzyState.optionValues ) {
-      
-      // if the question no partial credit, use an X or a ✓ to indicate correctness
-      var toWrite = quizzyState.optionValues[i];
-      if(!partialCredit)
-        toWrite = (quizzyState.optionValues[i] == quizzyState.bestScore) ? '✓' : 'X';
       
       // if it was best score, use quizzy_opt_best
       // in between best and worst, use quizzy_opt_mid
       // or the worst, use quizzy_opt_worst
       var useClass = 'quizzy_opt_worst';
-      if(quizzyState.optionValues[i] == quizzyState.bestScore)
+      if(quizzyState.optionValues[i] == quizzyState.bestScore || quizzyState.optionValues[i] == '✓')
         useClass = 'quizzy_opt_best';
       if(quizzyState.optionValues[i] > 0 && quizzyState.optionValues[i] < quizzyState.bestScore)
         useClass = 'quizzy_opt_mid';
       
-      $('#quizzy_q' + quizzyState.currentQuestion + '_opt' + i + '_val').html('<span class="' + useClass + '">' + toWrite + '</span>');
+      $('#quizzy_q' + quizzyState.currentQuestion + '_opt' + i + '_val').html('<span class="' + useClass + '">' + quizzyState.optionValues[i] + '</span>');
     }
     $('.quizzy_q_opt_val').fadeIn(quizzyState.fadeSpeed);
     
     
     // wait slideUpWait millisec
     setTimeout(function() {
-      // scroll up all but the selected answer and the best answer
-      var correctSel = '[id!=quizzy_q' + quizzyState.currentQuestion + '_opt' + quizzyState.correctOption + ']';
-      var pickedSel = '[id!=quizzy_q' + quizzyState.currentQuestion + '_opt' + quizzyState.selectedOption + ']';
-      if(quizzyState.addScore == quizzyState.bestScore)
-        correctSel = '';
+      // Need to build a bit of a tricky jQuery selector here. Basically, It's going to scroll up ALL the quizzy_q_opt class items 
+      // Except the correct answers and the one the user chose.
+      // Here we add all the correct options
+      var correctSel = '';
+      for (var i in quizzyState.correctOptions)
+        correctSel += '[id!=quizzy_q' + quizzyState.currentQuestion + '_opt' + quizzyState.correctOptions[i] + ']';
+      // And here we add all the options the user selected
+      var pickedSel = '';
+      for (var i in passingOptions.sel_opt)
+        pickedSel += '[id!=' + passingOptions.sel_opt[i].substring(0, passingOptions.sel_opt[i].length - 2) + ']';
+      
       $('.quizzy_q_opt' + correctSel + pickedSel).slideUp(quizzyState.slideSpeed);
       
       // wait expFadeInWait millisec

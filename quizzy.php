@@ -149,7 +149,7 @@
     //$output  = '<form action="quizzy.php" method="GET" style="height: 100%;">';
     $output = '<div class="quizzy_load_body">';
     $output .= '<h1>' . $quizzy_pick_quiz_message . '</h1>';
-
+    
     // Loop through all the files in the directory, making sure they're not . or ..
     $file_no = 0;
     while ( ($file = $quiz_dir->read()) !== false ) {
@@ -417,11 +417,11 @@
    * @param int $_GET['sel_opt']
    *   The option for which to retrieve the explanation
    * @return JSON formatted output containing the following variables:
-   *     optionValues   - An array specifiying how many points each of the options were worth
+   *     optionValues   - An array specifiying how many points each of the options were worth or simply containing a check / x
    *     addScore       - How many points should be added to the score
    *     correctOptions - Which were the best options (array)
    *     explanation    - HTML formatted string representing the explanation text
-   *     bestScore      - Which index is the best possible score
+   *     bestScore      - What is the highest score possible from any one option
    * @author Joe Balough
    */
   function serve_explanation() {
@@ -436,7 +436,6 @@
     // Get the question data
     $quest_no = intval($_GET['quest_no']);
     $quest = $quiz->question[$quest_no];
-    $sel_opts = array();
     
     // Calculate score stuff first
     
@@ -446,6 +445,7 @@
       case 'radio':
       default:
         // Parse the passed array of option ids into an array of tinyXML option nodes
+        $sel_opts = array();
         foreach ($_GET['sel_opt'] as $sel_opt) {
           preg_match('/quizzy_q.+_opt(.+)_b/', $sel_opt, $matches);
           $sel_opts[] = $quest->option[intval($matches[1])];
@@ -458,7 +458,7 @@
         
         // Use the question_best_score function to find the highest possible score for this question and the correct answers
         $best_score = question_best_score($quest);
-        $output['bestScore'] = $best_score['max_score'];
+        $output['bestScore'] = $best_score['best_score'];
         $output['correctOptions'] = $best_score['correct_options'];
         
         // Generate the array of values that each option is worth.
@@ -466,18 +466,33 @@
         foreach($quest->option as $opt)
           $output['optionValues'][] = intval($opt->score);
         
-        break;
-    }
-    
-    // Get the explanation properly
-    $exp = NULL;
-    switch ($quest['type']) {
-      case 'checkbox':
-        $exp = $quest->explanation;
-        break;
-      case 'radio':
-      default:
-        $exp = $sel_opts[0]->explanation;
+        // Determine whether or not to display values
+        $score_values = array();
+        $print_values = FALSE;
+        foreach ($quest->option as $opt) {
+          // Add the score to the arry of score values if it's not already in there
+          if (!in_array(intval($opt->score), $score_values))
+            $score_values[] = intval($opt->score);
+          
+          // If there are more than 2 score values, enable the value output
+          if (count($score_values) > 2)
+            $print_values = TRUE;
+        }
+        // Switch the optionValues to a × or a ✓ by sorting the array and changing the value to an
+        // X if there are 2 scores in the questino and the current option's score is the first one in the array.
+        if (!$print_values) {
+          asort($score_values);
+          foreach ($output['optionValues'] as &$option_value) {
+            if (count($score_values) == 2 && $option_value == $score_values[0])
+              $option_value = '×';
+            else
+              $option_value = '✓';
+          }
+        }
+        
+        // Get the explanation
+        $exp = ($quest['type'] == 'checkbox') ? $quest->explanation : $sel_opts[0]->explanation;
+        
         break;
     }
     
@@ -505,6 +520,7 @@
   function question_best_score(&$quest) {
     $return = array(
       'max_score' => 0,
+      'best_score' => 0,
       'correct_options' => array(),
     );
     
@@ -518,6 +534,8 @@
             $return['max_score'] += intval($opt->score);
             $return['correct_options'][] = $i;
           }
+          if (intval($opt->score) > $return['best_score'])
+            $return['best_score'] = intval($opt->score);
           ++$i;
         }
         break;
@@ -526,11 +544,19 @@
       default:
       case 'radio':
         $i = 0;
-        $quest_max = 0;
         foreach ($quest->option as $opt) {
-          if (intval($opt->score) > $quest_max) {
+          if (intval($opt->score) > $return['max_score']) {
             $return['max_score'] = intval($opt->score);
-            $return['correct_options'][0] = $i;
+            $return['best_score'] = intval($opt->score);
+            
+            // Since this indicates that there is a new champ in terms of best answer, we need
+            // to reset the correct_options array.
+            $return['correct_options'] = array();
+            $return['correct_options'][] = $i;
+          }
+          // If this option's score is equal to that of the best, add its index to the correct_options array
+          elseif (intval($opt->score) == $return['max_score']) {
+            $return['correct_options'][] = $i;
           }
           ++$i;
         }
