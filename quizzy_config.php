@@ -33,8 +33,8 @@
   $quizzy_pic_folder = '.';
   
   // the dimensions of the quiz in pixels
-  $quizzy_quiz_width = 200;
-  $quizzy_quiz_height = 300;
+  $quizzy_quiz_width = 280;
+  $quizzy_quiz_height = 400;
   
   // The message to display above the list of quiz names that the user would select
   // this is put in an h1 tag
