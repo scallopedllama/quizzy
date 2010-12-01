@@ -44,6 +44,17 @@
   // this is put in an h1 tag
   $quizzy_end_quiz_message = 'Done!';
   
+  // Determines how strict number questions should be. Quizzy will accept an 
+  // answer that is +- this value so if the answer is 1.00, it would accept 0.95 < answer < 1.05.
+  $quizzy_number_strictness = 0.05;
+  
+  // For input-type questions with a text-type answer, the answer provided in the XML file and the response
+  // provided by the user are first made lowercase then stripped of various characters before being compared.
+  // This is an array of all the characters that should be removed before doing the comparison.
+  $quizzy_strip_characters = array(' ', '\t', 
+                                   ',', '<', '.', '>', '/', '?', ';', ':', '\'', '\"', '[', '{', ']', '}', '\\', '|', 
+                                   '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=');
+  
   
   /**
    *  JavaScript-Only Global Variables

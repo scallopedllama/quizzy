@@ -291,7 +291,18 @@
     // Add the proper user input for the question
     $output .= '<div class="quizzy_q_opts">';
     switch ($quest['type']) {
-      
+      case 'input':
+        // Don't need much for the input-type questions. Add the input field
+        $output .= '<input type="text" name="quizzy_q' . $question_no . '" class="quizzy_q_txt" id="quizzy_q' . $question_no . '_txt"';
+        // Add the default value if it was set
+        if (isset($quest->default))
+          $output .= 'value="' . $quest->default . '"';
+        $output .= '>';
+          
+        // Span that will be filled with the option's score after the user clicks 'check score'
+        $output .= '<span class="quizzy_q_txt_val" id="quizzy_q' . $question_no . '_txt_val"></span>';
+          
+        break;
       
       case 'checkbox':
       case 'radio':
@@ -414,8 +425,8 @@
    *   The quiz index in that file (first quiz is index 0)
    * @param int $_GET['quest_no']
    *   The question to return (first is 0)
-   * @param int $_GET['sel_opt']
-   *   The option for which to retrieve the explanation
+   * @param int $_GET['response']
+   *   The user's response. Either an array of ids that the user selected / checked for radio and checkbox type or a string for input type
    * @return JSON formatted output containing the following variables:
    *     optionValues   - An array specifiying how many points each of the options were worth or simply containing a check / x
    *     addScore       - How many points should be added to the score
@@ -437,16 +448,55 @@
     $quest_no = intval($_GET['quest_no']);
     $quest = $quiz->question[$quest_no];
     
-    // Calculate score stuff first
+    // Should be set below to the proper simpleXML explanation node object.
+    $exp = NULL;
     
     // Process what the user input according to the question type
+    // $output['addScore'], $output['bestScore'], $output['correctOptions'], $output['optionValues'], and $exp need to be set here.
     switch ($quest['type']) {
+      case 'input':
+        // All checking here starts with the user-provided response and the xml-provided answer
+        // but they may be changed before running the comparison.
+        $response = $_GET['response'];
+        $answer = $quest->answer;
+        
+        // In any case, bestScore and explanation are set the same, the default case for the addScore is 0
+        $output['bestScore'] = $quest->score;
+        $exp = $quest->explanation;
+        $output['addScore'] = 0;
+        
+        // Within the input-type question, there three types of answers, handle them appropriately
+        switch ($quest->answer['type']) {
+          // 'text' and 'exact' essentiall do the same thing but text modifies the text a bit first.
+          case 'text':
+            // Strip whitespace, make it all lowercase, and remove any non-text character like
+            // punctionation from both the response and answer
+            str_replace($quizzy_strip_characters, '', strtolower($response));
+            str_replace($quizzy_strip_characters, '', strtolower($answer));
+            
+          case 'exact':
+            if ($response == $answer)
+              $output['addScore'] = $quest->score;
+            break;
+            
+          case 'number':
+            // The answer and response need to be parsed into numbers before comparing.
+            $response = parse_float($response);
+            $answer = parse_float($answer);
+            
+            // If response is $answer +/- $quizzy_number_strictness, the answer is correct.
+            if ($response > $answer - $quizzy_number_strictness && $response < $answer + $quizzy_number_strictness)
+              $output['addScore'] = $quest->score;
+            break;
+        }
+        break;
+    
       case 'checkbox':
       case 'radio':
       default:
         // Parse the passed array of option ids into an array of tinyXML option nodes
         $sel_opts = array();
-        foreach ($_GET['sel_opt'] as $sel_opt) {
+        foreach ($_GET['response'] as $sel_opt) {
           preg_match('/quizzy_q.+_opt(.+)_b/', $sel_opt, $matches);
           $sel_opts[] = $quest->option[intval($matches[1])];
         }
@@ -526,7 +576,12 @@
     
     switch ($quest['type']) {
       
-      // Checkbox-style questions' max score is the sum of the scores of all options that are > 0
+      // Input-type questions' max score is simply the score set in the question tag.
+      case 'input':
+        $return['max_score'] = $return['best_score'] = intval($quest->score);
+        break;
+      
+      // Checkbox-type questions' max score is the sum of the scores of all options that are > 0
       case 'checkbox':
         $i = 0;
         foreach ($quest->option as $opt) {
@@ -540,7 +595,7 @@
         }
         break;
       
-      // Radio-style questions' max score is the greatest score of all the options
+      // Radio-type questions' max score is the greatest score of all the options
       default:
       case 'radio':
         $i = 0;
@@ -563,6 +618,29 @@
         break;
     }
     return $return;
+  }
+  
+  
+  /**
+   * Utility function, parse float value from string.
+   * This function performs a locale-aware parse of a string to a float. It will ensure that the float is
+   * parsed properly regardless of whether the user uses a , or . to separate thousands or decimals.
+   * This function is borrowed from the PHP documenation page for floatval and was modified to fit the code style.
+   *
+   * @param string $float_string
+   *   The string to parse a float value from
+   * @return float
+   *   The float value of the passed string
+   * @author chris at georgakopoulos dot com
+   */
+  function parse_float($float_string) {
+    static $locale_info = localeconv();
+    // Account for the locale by removing thousands separator and making sure the decimal is a .
+    $float_string = str_replace($locale_info["mon_thousands_sep"] , "", $float_string);
+    $float_string = str_replace($locale_info["mon_decimal_point"] , ".", $float_string);
+    // Remove any characters that aren't a number, '-', or '.'
+    $float_string = ereg_replace("[^-0-9\.]", "", $float_string);
+    return floatval($float_string);
   }
   
 ?>
