@@ -189,10 +189,17 @@ function checkQuestion()
   // the user has quizzyState.selectedOption selected on question quizzyState.currentQuestion
   // on the quizzyState.index'th quiz in quizzyState.file
 
-  // make sure the user selected one
-  if( $('.quizzy_q_opt_b:checked').length == 0 )
+  // make sure the user provided an answer
+  if(    $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').length == 0 
+      && $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val() == ""           )
     return;
-
+  
+  // Determine if the current question is radio- or text-based
+  var questionType = 'radio';
+  if ($('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').length == 0)
+    questionType = 'text';
+  console.log(questionType);
+  
   // unbind the click event
   $(this).unbind();
 
@@ -216,8 +223,17 @@ function checkQuestion()
     quizzy_file: quizzyState.quizFile, 
     quizzy_index: quizzyState.quizIndex, 
     quest_no: quizzyState.currentQuestion, 
-    response: $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get(),
   };
+  switch (questionType) {
+    default:
+    case 'radio':
+      passingOptions.response = $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get();
+      break;
+    case 'text':
+      passingOptions.response = $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val();
+      break;
+  }
+  
   $.getJSON('quizzy/quizzy.php', passingOptions , function(data) {
     // Merge the data object into the quizzyState object
     for (var key in data) {
