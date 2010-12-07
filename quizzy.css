@@ -23,49 +23,49 @@
  */
 
 #quizzy {
-	overflow: hidden;
+  overflow: hidden;
 }
 
 #quizzy_c {
-	position: relative;
-	height: 100%;
+  position: relative;
+  height: 100%;
 }
 
 #quizzy_load{
-	height: 100%;
-	float: left;
+  height: 100%;
+  float: left;
   overflow: auto;
 }
 
 #quizzy_load img{
   /* This will force the image to fit within the box.
-   * IE6 doesn't support this, there's a hack in the quizzyHeader.php
-   */
+    * IE6 doesn't support this, there's a hack in the quizzyHeader.php
+    */
   float: right;
   max-width: 30%;
   margin: 4px;
 }
 
 #quizzy_quiz {
-	height: 100%;
-	float: left;
+  height: 100%;
+  float: left;
 }
 
 .quizzy_title {
-	height: 10%;
+  height: 10%;
   overflow: hidden;
 }
 
 #quizzy_q_c
 {
-	position: relative;
-	width: 100%;
-	height: 90%;
+  position: relative;
+  width: 100%;
+  height: 90%;
 }
 
 .quizzy_q {
   height: 100%;
-	float: left;
+  float: left;
 }
 
 /*
@@ -73,8 +73,8 @@
  */
 
 .quizzy_q_body {
-	width: 100%;
-	height: 40%;
+  width: 100%;
+  height: 40%;
   overflow: hidden;
 }
 
@@ -88,9 +88,18 @@
   margin: 4px;
 }
 
+.quizzy_q_txt {
+  margin-left:3px;
+  width: 87%;
+}
+
+.quizzy_q_txt_val {
+  margin-left: 4px;
+}
+
 .quizzy_q_opts {
-	width: 100%;
-	height: 50%;
+  width: 100%;
+  height: 50%;
   overflow: hidden;
 }
 
@@ -105,7 +114,7 @@
 }
 
 .quizzy_q_opt_val {
-	float:right;
+  float:right;
 }
 
 .quizzy_q_exp {
@@ -122,8 +131,8 @@
 }
 
 .quizzy_q_foot {
-	width: 100%;
-	height: 10%;
+  width: 100%;
+  height: 10%;
   text-align: right;
   overflow:hidden;
 }
@@ -134,8 +143,8 @@
 
 .quizzy_done img {
   /* This will force the image to fit within the box.
-   * IE6 doesn't support this, there's a hack in the quizzyHeader.php
-   */
+    * IE6 doesn't support this, there's a hack in the quizzyHeader.php
+    */
   max-height: 15%;
   margin: 4px;
 }
