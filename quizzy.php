@@ -458,36 +458,47 @@
         // All checking here starts with the user-provided response and the xml-provided answer
         // but they may be changed before running the comparison.
         $response = $_GET['response'];
-        $answer = $quest->answer;
         
-        // In any case, bestScore and explanation are set the same, the default case for the addScore is 0
-        $output['bestScore'] = $quest->score;
-        $exp = $quest->explanation;
+        // Get the best score information and set some output variables
+        $best_score = question_best_score($quest);
+        $output['bestScore'] = $best_score['best_score'];
         $output['addScore'] = 0;
+        $exp = $quest->explanation;
         
-        // Within the input-type question, there three types of answers, handle them appropriately
-        switch ($quest->answer['type']) {
-          // 'text' and 'exact' essentiall do the same thing but text modifies the text a bit first.
-          case 'text':
-            // Strip whitespace, make it all lowercase, and remove any non-text character like
-            // punctionation from both the response and answer
-            str_replace($quizzy_strip_characters, '', strtolower($response));
-            str_replace($quizzy_strip_characters, '', strtolower($answer));
-            
-          case 'exact':
-            if ($response == $answer)
-              $output['addScore'] = $quest->score;
-            break;
-            
-          case 'number':
-            // The answer and response need to be parsed into numbers before comparing.
-            $response = parse_float($response);
-            $answer = parse_float($answer);
-            
-            // If response is $answer +/- $quizzy_number_strictness, the answer is correct.
-            if ($response > $answer - $quizzy_number_strictness && $response < $answer + $quizzy_number_strictness)
-              $output['addScore'] = $quest->score;
-            break;
+        // Check against all answers
+        foreach ($quest->answer as $answer) {
+          $answer_text = $answer->text;
+          
+          // Within the input-type question, there three types of answers, handle them appropriately
+          switch ($answer['type']) {
+            // 'text' and 'exact' essentiall do the same thing but text modifies the text a bit first.
+            case 'text':
+              // Strip whitespace, make it all lowercase, and remove any non-text character like
+              // punctionation from both the response and answer
+              str_replace($quizzy_strip_characters, '', strtolower($response));
+              str_replace($quizzy_strip_characters, '', strtolower($answer_text));
+              
+            case 'exact':
+              if ($response == $answer) {
+                $output['addScore'] = $answer->score;
+                if (isset($answer->explanation))
+                  $ans = $answer->explanation;
+              }
+              break;
+              
+            case 'number':
+              // The answer and response need to be parsed into numbers before comparing.
+              $response = parse_float($response);
+              $answer_float = parse_float($answer_text);
+              
+              // If response is $answer +/- $quizzy_number_strictness, the answer is correct.
+              if ($response > $answer_float - $quizzy_number_strictness && $response < $answer_float + $quizzy_number_strictness) {
+                $output['addScore'] = $answer->score;
+                if (isset($answer->explanation))
+                  $ans = $answer->explanation;
+              }
+              break;
+          }
         }
         break;
     
@@ -548,7 +559,7 @@
     
     // Build explanation text
     $output['explanation'] = '';
-    if (isset($exp->img)) {
+    if (!empty($exp) && isset($exp->img)) {
       $output['explanation'] .= '<img src="' . $quizzy_pic_dir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
     }
     $output['explanation'] .= '<p>' . $exp->text . '</p>';
@@ -564,6 +575,7 @@
    *   The question to work on
    * @return array
    *   'max_score'       => The highest possible score for this question
+   *   'best_score'      => The highest single score available for this question
    *   'correct_options' => An array of the 'correct' option indices
    * @author Joe Balough
    */
@@ -578,9 +590,20 @@
       
       // Input-type questions' max score is simply the score set in the question tag.
       case 'input':
-        $return['max_score'] = $return['best_score'] = intval($quest->score);
+        $i = 0;
+        foreach ($quest->answer as $answer) {
+          if ($answer->score > $return['max_score']) {
+            $return['max_score'] = $return['best_score'] = intval($answer->score);
+            
+            $return['correct_options'] = array();
+            $return['correct_options'][] = $i;
+          }
+          if ($answer->score == $return['max_score']) {
+            $return['correct_options'][] = $i;
+          }
+          ++$i;
+        }
         break;
-      
       // Checkbox-type questions' max score is the sum of the scores of all options that are > 0
       case 'checkbox':
         $i = 0;
@@ -601,8 +624,7 @@
         $i = 0;
         foreach ($quest->option as $opt) {
           if (intval($opt->score) > $return['max_score']) {
-            $return['max_score'] = intval($opt->score);
-            $return['best_score'] = intval($opt->score);
+            $return['max_score'] = $return['best_score'] = intval($opt->score);
             
             // Since this indicates that there is a new champ in terms of best answer, we need
             // to reset the correct_options array.
@@ -634,7 +656,7 @@
    * @author chris at georgakopoulos dot com
    */
   function parse_float($float_string) {
-    static $locale_info = localeconv();
+    $locale_info = localeconv();
     // Account for the locale by removing thousands separator and making sure the decimal is a .
     $float_string = str_replace($locale_info["mon_thousands_sep"] , "", $float_string);
     $float_string = str_replace($locale_info["mon_decimal_point"] , ".", $float_string);
