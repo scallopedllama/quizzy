@@ -436,7 +436,7 @@
    * @author Joe Balough
    */
   function serve_explanation() {
-    global $quizzy_pic_dir;
+    global $quizzy_pic_dir, $quizzy_strip_characters, $quizzy_number_strictness;
     
     // The output array that will eventually be passed to json_encode.
     $output = array();
@@ -467,7 +467,7 @@
         
         // Check against all answers
         foreach ($quest->answer as $answer) {
-          $answer_text = $answer->text;
+          $answer_text = $answer->value;
           
           // Within the input-type question, there three types of answers, handle them appropriately
           switch ($answer['type']) {
@@ -475,14 +475,14 @@
             case 'text':
               // Strip whitespace, make it all lowercase, and remove any non-text character like
               // punctionation from both the response and answer
-              str_replace($quizzy_strip_characters, '', strtolower($response));
-              str_replace($quizzy_strip_characters, '', strtolower($answer_text));
+              $response = str_replace($quizzy_strip_characters, '', strtolower($response));
+              $answer_text = str_replace($quizzy_strip_characters, '', strtolower($answer_text));
               
             case 'exact':
-              if ($response == $answer) {
-                $output['addScore'] = $answer->score;
+              if ($response == $answer_text) {
+                $output['addScore'] = intval($answer->score);
                 if (isset($answer->explanation))
-                  $ans = $answer->explanation;
+                  $exp = $answer->explanation;
               }
               break;
               
@@ -493,7 +493,7 @@
               
               // If response is $answer +/- $quizzy_number_strictness, the answer is correct.
               if ($response > $answer_float - $quizzy_number_strictness && $response < $answer_float + $quizzy_number_strictness) {
-                $output['addScore'] = $answer->score;
+                $output['addScore'] = intval($answer->score);
                 if (isset($answer->explanation))
                   $ans = $answer->explanation;
               }
@@ -661,7 +661,7 @@
     $float_string = str_replace($locale_info["mon_thousands_sep"] , "", $float_string);
     $float_string = str_replace($locale_info["mon_decimal_point"] , ".", $float_string);
     // Remove any characters that aren't a number, '-', or '.'
-    $float_string = ereg_replace("[^-0-9\.]", "", $float_string);
+    $float_string = preg_replace("/[^-0-9\.]/", "", $float_string);
     return floatval($float_string);
   }
   
