@@ -165,6 +165,14 @@ function requestNextQuestion()
       requestNextQuestion();
     });
     
+    // Add a keypress handler to the textbox (if there is one) to make it click 'check' when enter is pressed.
+    $('.quizzy_q_txt').keypress(function (event) {
+      if (event.keyCode == '13') {
+        event.preventDefault();
+        $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click();
+      }
+    });
+    
     // slide quizzy_c to the right if we're on question 0, quizzy_q_c otherwise
     var scrollSel = (quizzyState.currentQuestion == 0) ? '#quizzy_c' : '#quizzy_q_c';
     var scrollAmt = (quizzyState.currentQuestion == 0) ? (-quizzyState.quizWidth * (quizzyState.currentQuestion + 1)) : (-quizzyState.quizWidth * (quizzyState.currentQuestion));
@@ -198,7 +206,6 @@ function checkQuestion()
   var questionType = 'radio';
   if ($('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').length == 0)
     questionType = 'text';
-  console.log(questionType);
   
   // unbind the click event
   $(this).unbind();
@@ -247,24 +254,48 @@ function checkQuestion()
     // add to quizzyState.score
     quizzyState.score += quizzyState.addScore;
       
-    // show the values
-    for( i in quizzyState.optionValues ) {
-      
-      // if it was best score, use quizzy_opt_best
-      // in between best and worst, use quizzy_opt_mid
-      // or the worst, use quizzy_opt_worst
-      var useClass = 'quizzy_opt_worst';
-      if(quizzyState.optionValues[i] == quizzyState.bestScore || quizzyState.optionValues[i] == '✓')
-        useClass = 'quizzy_opt_best';
-      if(quizzyState.optionValues[i] > 0 && quizzyState.optionValues[i] < quizzyState.bestScore)
-        useClass = 'quizzy_opt_mid';
-      
-      $('#quizzy_q' + quizzyState.currentQuestion + '_opt' + i + '_val').html('<span class="' + useClass + '">' + quizzyState.optionValues[i] + '</span>');
+    // Reveal the correct answers
+    switch (questionType) {
+      case 'radio':
+        for( i in quizzyState.optionValues ) {
+          
+          // if it was best score, use quizzy_opt_best
+          // in between best and worst, use quizzy_opt_mid
+          // or the worst, use quizzy_opt_worst
+          var useClass = 'quizzy_opt_worst';
+          if(quizzyState.optionValues[i] == quizzyState.bestScore || quizzyState.optionValues[i] == '✓')
+            useClass = 'quizzy_opt_best';
+          if(quizzyState.optionValues[i] > 0 && quizzyState.optionValues[i] < quizzyState.bestScore)
+            useClass = 'quizzy_opt_mid';
+          
+          $('#quizzy_q' + quizzyState.currentQuestion + '_opt' + i + '_val').html('<span class="' + useClass + '">' + quizzyState.optionValues[i] + '</span>');
+        }
+        $('.quizzy_q_opt_val').fadeIn(quizzyState.fadeSpeed);
+        break;
+        
+      case 'text':
+        // Using same classes as above. Comparing to bestScore
+        var useClass = 'quizzy_opt_worst';
+        var toPrint = '×';
+        if (quizzyState.addScore == quizzyState.bestScore) {
+          useClass = 'quizzy_opt_best';
+          toPrint = '✓';
+        }
+        else if (quizzyState.addScore > 0) {
+          useClass = 'quizzy_opt_mid';
+          toPrint = '+' + quizzyState.addScore;
+        }
+        
+        // Reveal the user's score.
+        $('#quizzy_q' + quizzyState.currentQuestion + '_txt_val').html('<span class="' + useClass + '">' + toPrint + '</span>');
+        $('.quizzy_q_txt_val').fadeIn(quizzyState.fadeSpeed);
     }
-    $('.quizzy_q_opt_val').fadeIn(quizzyState.fadeSpeed);
     
+    // If the question is a radio type, wait some time before sliding up the wrong answers. If it's a text question, don't wait at all
+    var slideUpWait = quizzyState.slideUpWait;
+    if (questionType == 'text')
+      slideUpWait = 0;
     
-    // wait slideUpWait millisec
     setTimeout(function() {
       // Need to build a bit of a tricky jQuery selector here. Basically, It's going to scroll up ALL the quizzy_q_opt class items 
       // Except the correct answers and the one the user chose.
@@ -295,7 +326,7 @@ function checkQuestion()
         
       }, quizzyState.expFadeInWait); 		// wait expFadeInWait ms to fade in explanation
       
-    }, quizzyState.slideUpWait); 			// wait scrollupwait ms to scroll up all but best answer
+    }, slideUpWait); 			// wait scrollupwait ms to scroll up all but best answer
     
   });
 }
