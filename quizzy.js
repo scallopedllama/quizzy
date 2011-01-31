@@ -182,6 +182,9 @@ function requestNextQuestion()
 
       // fade in the check button
       $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
+
+      // Focus the text field
+      $('#quizzy_q' + quizzyState.currentQuestion + '_txt').focus();
     });
   });
 }
@@ -287,8 +290,10 @@ function checkQuestion()
         }
 
         // Reveal the user's score.
-        $('#quizzy_q' + quizzyState.currentQuestion + '_txt_val').html('<span class="' + useClass + '">' + toPrint + '</span>');
-        $('.quizzy_q_txt_val').fadeIn(quizzyState.fadeSpeed);
+        $('#quizzy_q' + quizzyState.currentQuestion + '_txt_val').html('<span class="' + useClass + '">' + toPrint + '</span>').hide();
+        $('#quizzy_q' + quizzyState.currentQuestion + '_txt').animate({width: '87%'}, quizzyState.slideSpeed, quizzyState.animateStyle, function () {
+          $('.quizzy_q_txt_val').fadeIn(quizzyState.fadeSpeed);
+        });
     }
 
     // If the question is a radio type, wait some time before sliding up the wrong answers. If it's a text question, don't wait at all
@@ -320,7 +325,7 @@ function checkQuestion()
         setTimeout(function() {
 
           // fade in next button
-          $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
+          $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').attr('disabled', false).fadeIn(quizzyState.fadeSpeed).focus();
 
         }, quizzyState.nextFadeInWait); // wait nextFadeInWait ms to fade in the next button
 
