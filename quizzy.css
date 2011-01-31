@@ -2,7 +2,7 @@
  * This file is part of quizzy.
  *
  * quizzy is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as 
+ * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
  *
@@ -11,13 +11,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public 
+ * You should have received a copy of the GNU Affero General Public
  * License along with quizzy. If not, see <http://www.gnu.org/licenses/>.
  */
-  
+
 /**
  * This stylesheet contains the css settings required for
- * quizzy to work at all correct. If you want to change 
+ * quizzy to work at all correct. If you want to change
  * any of these, they can be overridden in your quizzySkin.css
  * file.
  */
@@ -89,7 +89,7 @@
 }
 
 .quizzy_q_txt {
-  width: 88%;
+  width: 98%;
 }
 
 .quizzy_q_txt_val {
