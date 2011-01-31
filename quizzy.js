@@ -184,6 +184,7 @@ function requestNextQuestion()
       $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
 
       // Focus the text field
+      // TODO: or the first button?
       $('#quizzy_q' + quizzyState.currentQuestion + '_txt').focus();
     });
   });
