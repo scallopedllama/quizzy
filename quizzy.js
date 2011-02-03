@@ -333,7 +333,7 @@ function checkQuestion()
 
       }, quizzyState.expFadeInWait); 		             // to fade in explanation
 
-    }, (questionType == 'input') ? 0 : slideUpWait); // to scroll up all but best answer unless the question is of input type
+    }, (questionType == 'input') ? 0 : quizzyState.slideUpWait); // to scroll up all but best answer unless the question is of input type
 
   });
 }
