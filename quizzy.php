@@ -434,7 +434,7 @@
       $output .= '<div class="quizzy_result_img"><img src="' . $quizzy_pic_dir . $score_range->img['src'] . '" alt="' . $score_range->img['alt'] . '" ></div>';
     }
 
-    $output .= '<p class="quizzy_result_rank quizzy_result_rank_' . get_quiz_string($score_range->rank, TRUE) . '">' . get_quiz_string($score_range->rank) . '</p>';
+    $output .= '<p class="quizzy_result_rank">' . get_quiz_string($score_range->rank) . '</p>';
     $output .= '<div class="quizzy_result_foot"><input type="submit" onclick="restartQuizzy();" value="Do a different Quiz"></div>';
     $output .= '</div>';
 
