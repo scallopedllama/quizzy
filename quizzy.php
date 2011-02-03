@@ -465,7 +465,7 @@
    * @author Joe Balough
    */
   function serve_explanation() {
-    global $quizzy_pic_dir, $quizzy_strip_characters, $quizzy_number_strictness;
+    global $quizzy_pic_dir, $quizzy_strip_characters, $quizzy_number_strictness, $quizzy_show_answer;
 
     // The output array that will eventually be passed to json_encode.
     $output = array();
@@ -591,7 +591,15 @@
     if (!empty($exp) && isset($exp->img)) {
       $output['explanation'] .= '<img src="' . $quizzy_pic_dir . $exp->img['src'] . '" alt="' . $exp->img['alt'] . '">';
     }
+
     $output['explanation'] .= '<p>' . get_quiz_string($exp->text) . '</p>';
+
+    // If showing the answers is off, only return the addScore variable
+    if (!$quizzy_show_answer) {
+      $addScore = $output['addScore'];
+      unset($output);
+      $output = array('addScore' => $addScore);
+    }
 
     return json_encode($output);
   }

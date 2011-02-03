@@ -201,18 +201,25 @@ function requestNextQuestion()
  */
 function checkQuestion()
 {
-  // the user has quizzyState.selectedOption selected on question quizzyState.currentQuestion
-  // on the quizzyState.index'th quiz in quizzyState.file
+  // Get the question type and determine what the user's response was
+  var questionType = $('#quizzy_q' + quizzyState.currentQuestion + '_type').val();
+  var userResponse = "";
+  switch (questionType) {
+    default:
+    case 'radio':
+    case 'checkbox':
+      userResponse = $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get();
+      break;
+    case 'input':
+      userResponse = $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val();
+      break;
+  }
+  console.info(questionType);
+  console.info(userResponse);
 
   // make sure the user provided an answer
-  if(    $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').length == 0
-      && $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val() == ""           )
+  if(userResponse.length == 0 || userResponse == "")
     return;
-
-  // Determine if the current question is radio- or text-based
-  var questionType = 'radio';
-  if ($('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').length == 0)
-    questionType = 'text';
 
   // unbind the click event
   $(this).unbind();
@@ -237,29 +244,26 @@ function checkQuestion()
     quizzy_file: quizzyState.quizFile,
     quizzy_index: quizzyState.quizIndex,
     quest_no: quizzyState.currentQuestion,
+    response: userResponse,
   };
-  switch (questionType) {
-    default:
-    case 'radio':
-      passingOptions.response = $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get();
-      break;
-    case 'text':
-      passingOptions.response = $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val();
-      break;
-  }
-
   $.getJSON('quizzy/quizzy.php', passingOptions , function(data) {
     // Merge the data object into the quizzyState object
     for (var key in data) {
       quizzyState[key] = data[key];
     }
+    // add to quizzyState.score
+    quizzyState.score += quizzyState.addScore;
+
+    // See if the answers should be shown and if not, request the next question and return
+    if (!quizzyState.showAnswer) {
+      $('#quizzy').loading(true);
+      requestNextQuestion();
+      return;
+    }
 
     // have the data returned by that ajax query, set the proper div info
     $('#quizzy_q' + quizzyState.currentQuestion + '_exp').html(data.explanation);
     // that should have set the quizzyState.correctOption and add variables
-
-    // add to quizzyState.score
-    quizzyState.score += quizzyState.addScore;
 
     // Reveal the correct answers
     switch (questionType) {
