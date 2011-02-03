@@ -214,8 +214,6 @@ function checkQuestion()
       userResponse = $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val();
       break;
   }
-  console.info(questionType);
-  console.info(userResponse);
 
   // make sure the user provided an answer
   if(userResponse.length == 0 || userResponse == "")
@@ -267,7 +265,9 @@ function checkQuestion()
 
     // Reveal the correct answers
     switch (questionType) {
+      default:
       case 'radio':
+      case 'checkbox':
         for( i in quizzyState.optionValues ) {
 
           // if it was best score, use quizzy_opt_best
@@ -284,7 +284,7 @@ function checkQuestion()
         $('.quizzy_q_opt_val').fadeIn(quizzyState.fadeSpeed);
         break;
 
-      case 'text':
+      case 'input':
         // Using same classes as above. Comparing to bestScore
         var useClass = 'quizzy_opt_worst';
         var toPrint = '×';
