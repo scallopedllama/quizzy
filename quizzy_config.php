@@ -38,6 +38,11 @@
   // escape it twice. So to add a '<' character to a question, you'd need to put &amp;lt; to your quiz.
   $quizzy_html_entities = TRUE;
 
+  // Whether or not the user should get a 'check answers' but or just a 'next' button.
+  // If set to FALSE, the user will enter their answer, click next, and they will never be told
+  // whether or not they answered that one question correctly.
+  $quizzy_show_answer = FALSE;
+
   // the dimensions of the quiz in pixels
   $quizzy_quiz_width = 280;
   $quizzy_quiz_height = 400;
@@ -119,6 +124,9 @@
     // You shouldn't change this.
     'quizWidth' => $quizzy_quiz_width,
     'quizHeight' => $quizzy_quiz_height,
+
+    // Should the answers be shown or not
+    'showAnswer' => $quizzy_show_answer,
 
   ); // js_variables
 

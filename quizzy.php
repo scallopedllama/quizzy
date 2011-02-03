@@ -303,6 +303,7 @@
 
     // Get the requested question
     $quest = $quiz->question[$question_no];
+    $question_type = empty($quest['type']) ? 'radio' : $quest['type'];
 
     // Add the question itself
     $output .= '<div class="quizzy_q_body">';
@@ -317,7 +318,9 @@
 
     // Add the proper user input for the question
     $output .= '<div class="quizzy_q_opts">';
-    switch ($quest['type']) {
+    // Drop a clue as to what kind of question this is
+    $output .= '<input type="hidden" value="' . $question_type . '" id="quizzy_q' . $question_no . '_type">';
+    switch ($question_type) {
       case 'input':
         // Don't need much for the input-type questions. Add the input field
         $output .= '<input type="text" name="quizzy_q' . $question_no . '" class="quizzy_q_txt" id="quizzy_q' . $question_no . '_txt"';
@@ -341,8 +344,7 @@
           $output .= '<p class="quizzy_q_opt" id="quizzy_q' . $question_no . '_opt' . $option_no . '">';
 
           // Radio / check button
-          $input_type = empty($quest['type']) ? 'radio' : $quest['type'];
-          $output .= '<input type="' . $input_type . '" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b quizzy_q' . $question_no . '_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
+          $output .= '<input type="' . $question_type . '" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b quizzy_q' . $question_no . '_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
 
           // Label
           $output .= '<label for="quizzy_q' . $question_no . '_opt' . $option_no . '_b">' . get_quiz_string($opt->text);

@@ -159,17 +159,14 @@ function requestNextQuestion()
 
     // add the click event to the check and next buttons
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click(checkQuestion);
-    $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').click(function (){
-      $('#quizzy').loading(true);
-      $(this).unbind();
-      requestNextQuestion();
-    });
+    $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').click();
 
     // Add a keypress handler to the textbox (if there is one) to make it click 'check' when enter is pressed.
+    var buttonSelEnd = (quizzyState.showAnswer == true) ? '_foot_chk' : '_foot_nxt';
     $('.quizzy_q_txt').keypress(function (event) {
       if (event.keyCode == '13') {
         event.preventDefault();
-        $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click();
+        $('#quizzy_q' + quizzyState.currentQuestion + buttonSelEnd).click();
       }
     });
 
@@ -180,8 +177,8 @@ function requestNextQuestion()
       // uncheck the last question's buttons
       $('.quizzy_q_opt_b').attr('checked', false);
 
-      // fade in the check button
-      $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
+      // fade in the proper button based on the value of the showAnswer setting
+      $('#quizzy_q' + quizzyState.currentQuestion + buttonSelEnd).attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
 
       // Focus the text field
       // TODO: or the first button?
@@ -335,6 +332,65 @@ function checkQuestion()
     }, slideUpWait); 			// wait scrollupwait ms to scroll up all but best answer
 
   });
+}
+
+
+/**
+ * This function is called when the user clicks the next button.
+ * Typically, it just calls the requestNextQuestion function but if showAnswer is off,
+ * It has to request the score for the users response
+ */
+function nextQuestion() {
+  // If questions are hidden, check the answer really quick
+  if (quizzyState.showAnswer == false) {
+    var questionType = $('#quizzy_q' + quizzyState.currentQuestion + '_type').val();
+    var response = '';
+    switch (questionType) {
+      default:
+      case 'radio':
+      case 'checkbox':
+        response = $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get();
+        break;
+      case 'input':
+        response = $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val();
+        break;
+    }
+    // TODO: This is a lot of copy pasta. Try to get rid of that switch below too by setting a
+    // Response variable before here.
+    // make sure the user provided an answer
+    if(response.length == 0 || response == "") {
+      alert ('no response');
+      return;
+    }
+
+    // get the score for this option, it will set the quizzyState.score variable
+    // information received in JSON:
+    //     addScore       - How many points should be added to the score
+    var passingOptions = {
+      quizzy_op: 'score',
+      quizzy_file: quizzyState.quizFile,
+      quizzy_index: quizzyState.quizIndex,
+      quest_no: quizzyState.currentQuestion,
+    };
+    switch (questionType) {
+      default:
+      case 'radio':
+        passingOptions.response = $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:checked').map(function () {return $(this).attr('id');}).get();
+        break;
+      case 'text':
+        passingOptions.response = $('#quizzy_q' + quizzyState.currentQuestion + '_txt').val();
+        break;
+    }
+
+    $.getJSON('quizzy/quizzy.php', passingOptions , function(data) {
+      // add to quizzyState.score
+      quizzyState.score += data.addScore;
+    });
+  }
+
+  $('#quizzy').loading(true);
+  $(this).unbind();
+  requestNextQuestion();
 }
 
 
