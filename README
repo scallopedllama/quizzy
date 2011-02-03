@@ -1,17 +1,27 @@
-quizzy is a PHP library that uses jQuery to deliver an nice looking animated quiz to visitors to their page
-that is distributed under the GNU Affero General Public License v3. This means that you are free to use quizzy
-as you desire on any of your pages. However, if you make any changes to quizzy, they must be made available.
+quizzy is a PHP library that uses jQuery to deliver an nice looking animated quiz to visitors to your page
+and is distributed under the GNU Affero General Public License v3. This means that you are free to use quizzy
+as you desire on any of your pages. However, if you make any changes to quizzy, your source code must be made
+available.
+
 It loads quiz data from XML files stored on the server and loads all the data in small increments using AJAX.
 This decreases the amount of data that needs to be loaded with the page to add the quiz and prevents users
-from cheating by simply looking at the source of the page. For now, quizzy only supports multiple-choice quizzes
-but will be extended to include select all that apply type questions in the near future. 
-quizzy requires PHP 5 (for tinyxml) with the json extension enabled. 
+from cheating by simply looking at the source of the page. Quizzy supports multiple-choice questions, select-all-
+that-apply type questions, text input questions, and number input questions (see description of question types)
+below.
+
+quizzy requires PHP 5 (for simplexml) and either the PHP json extension (in PHP 5.2.0) or the Zend JSON framework.
 
 
 ------------------------------------- Instructions for use of quizzy ----------------------------------------------
 
   0. Make sure that you have the json extension enabled in your php configuration.
      You may have to edit /etc/php/php.ini and uncomment or add the line 'extension json.so'.
+     If you do not have the json extension available. You can use the Zend JSON framework:
+       a. Go to http://framework.zend.com/download/current/ and download the "Zend Framework Full" tar.gz file (4th option).
+       b. Create a folder called 'Zend' in your quizzy directory.
+       c. Extract the Zend framework tar ball you got somewhere. Copy the following files into the Zend folder in quizzy
+            Zend/Json.php
+            Zend/Json/*
   1. Extract quizzy and put the 'quizzy' directory into the same folder as your webpage.
   2. Drop <?php include 'quizzy/quizzy_header.php';?> in your <head> section
   3. Put <?php include 'quizzy/quizzy.php'; ?> in your <body> section where you want the quiz
@@ -36,11 +46,11 @@ IE 6 quirks:
  - images are constrained by having a width or height set, since max-width & max-height do not work
 
 Opera quirks:
- - when scrolling to the second question (and only that one) the first question scrolls from off the 
+ - when scrolling to the second question (and only that one) the first question scrolls from off the
    right side of the screen (instead of its current location). I have no idea why.
 
 Overall quirks:
- - Quizzes with descriptions that have pictures will not slide down in a smooth fashion. 
+ - Quizzes with descriptions that have pictures will not slide down in a smooth fashion.
    This issue is being worked on.
  - If you skin the quiz to be position: absolute, the jQuery loading plugin stops working.
 
