@@ -155,7 +155,7 @@
    */
   function serve_config() {
     global $quizzy_js_variables;
-    return json_encode($quizzy_js_variables);
+    return _json_encode($quizzy_js_variables);
   }
 
 
@@ -167,7 +167,7 @@
    * @author Joe Balough
    */
   function serve_quizzes() {
-    global $quizzy_cwd, $quizzy_quiz_folder, $quizzy_pick_quiz_message, $quizzy_pic_dir;
+    global $quizzy_cwd, $quizzy_quiz_folder, $quizzy_pick_quiz_message, $quizzy_pic_dir, $quizzy_quiz_height;
 
     // Open the quizzes dir
     $quiz_dir = dir($quizzy_cwd . '/' . $quizzy_quiz_folder);
@@ -175,6 +175,16 @@
     // Begin formatting the list
     //$output  = '<form action="quizzy.php" method="GET" style="height: 100%;">';
     $output = '<div class="quizzy_load_body">';
+
+    // A Helpful warning for people who don't have json enabled in their php configuration
+    if (!function_exists('json_encode') && !file_exists($quizzy_cwd . "/Zend/Json.php")) {
+      $output .= '<p><h1 class="quizzy_opt_worst">quizzy Error!</h1></p>';
+      $output .= '<p>The JSON extension is not enabled in this PHP installation and the Zend JSON Framework was not found.</p>';
+      $output .= '<p>quizzy <i>will not</i> function without a JSON framework.</p>';
+      $output .= '<p style="margin-bottom: 150px">See the README.</p>';
+    }
+
+    // Welcome message
     $output .= '<h1>' . get_quiz_string($quizzy_pick_quiz_message) . '</h1>';
 
     // Loop through all the files in the directory, making sure they're not . or ..
@@ -268,7 +278,7 @@
     // Close up the quiz div
     $output['quiz'] .= '</div>';
 
-    return json_encode($output);
+    return _json_encode($output);
   }
 
 
@@ -467,7 +477,7 @@
   function serve_explanation() {
     global $quizzy_pic_dir, $quizzy_strip_characters, $quizzy_number_strictness, $quizzy_show_answer;
 
-    // The output array that will eventually be passed to json_encode.
+    // The output array that will eventually be passed to _json_encode.
     $output = array();
 
     // Load up the quiz
@@ -601,7 +611,7 @@
       $output = array('addScore' => $addScore);
     }
 
-    return json_encode($output);
+    return _json_encode($output);
   }
 
 
@@ -677,6 +687,29 @@
         break;
     }
     return $return;
+  }
+
+
+  /**
+   * Wrapper function for json output encoding
+   * Typically just passes its input to the json_encode function. It is wrapped for
+   * people who are forced to use an old version of PHP and cannot enable the json extension.
+   * See the README for more information.
+   *
+   * @param mixed $value
+   *   The array / object / etc to encode into JSON
+   * @return string
+   *   The JSON string representing the input
+   * @author Joe Balough
+   */
+  function _json_encode($value) {
+    global $quizzy_cwd;
+    if (function_exists('json_encode'))
+      return json_encode($value);
+    else {
+      require_once "Zend/Json.php";
+      return Zend_Json::encode($value);
+    }
   }
 
 
