@@ -168,8 +168,8 @@ function requestNextQuestion()
       requestNextQuestion();
     });
 
-    // Add a keypress handler to the textbox (if there is one) to make it click 'check' when enter is pressed.
-    $('.quizzy_q_txt').keypress(function (event) {
+    // Add a keypress handler to the textbox or the option buttons to make it click 'check' when enter is pressed.
+    $('.quizzy_q_txt, .quizzy_q_opt_b').keypress(function (event) {
       if (event.keyCode == '13') {
         event.preventDefault();
         $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click();
@@ -186,9 +186,9 @@ function requestNextQuestion()
       // fade in the proper button based on the value of the showAnswer setting
       $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
 
-      // Focus the text field
-      // TODO: or the first button?
+      // Focus the text field or the first option
       $('#quizzy_q' + quizzyState.currentQuestion + '_txt').focus();
+      $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:first').focus();
     });
   });
 }
