@@ -33,7 +33,7 @@
    * @author Joe Balough
    */
 
-  if (!isset($_GET['quizzy_op']) || empty($_GET['quizzy_op'])) {
+  if (!isset($_GET['quizzy_op']) || empty($_GET['quizzy_op']) || isset($_GET['quizzy_legacy'])) {
     // Wrapper for everything in the quiz (overflow: hidden)
     $output = '<div id="quizzy" style="width: ' . $quizzy_quiz_width . 'px; height: ' . $quizzy_quiz_height . 'px">';
     // Wrapper that contains two panes: quiz select screen on left and the selected quiz on right
@@ -42,7 +42,8 @@
     $output .= '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px">';
 
     // Drop the available quizzes in there
-    $output .= serve_quizzes();
+    if (!isset($_GET['quizzy_legacy']))
+      $output .= serve_quizzes();
     $output .= '</div>';
 
     // And the quiz wrapper (the right side above)
@@ -54,7 +55,8 @@
     echo $output;
 
     // Nothing else to be done, so simply stop running this script right now.
-    return;
+    if (!isset($_GET['quizzy_legacy']))
+      return;
 
   } // Default behavior
 
@@ -173,8 +175,10 @@
     $quiz_dir = dir($quizzy_cwd . '/' . $quizzy_quiz_folder);
 
     // Begin formatting the list
-    //$output  = '<form action="quizzy.php" method="GET" style="height: 100%;">';
-    $output = '<div class="quizzy_load_body">';
+    $output  = '<form method="GET" style="height: 100%;" id="quizzy_legacy_form">';
+    $output .= '<input type="hidden" name="quizzy_legacy" id="quizzy_legacy_input">';
+    $output .= '<input type="hidden" name="quizzy_op" value="quiz" id="quizzy_legacy_op">';
+    $output .= '<div class="quizzy_load_body">';
 
     // A Helpful warning for people who don't have json enabled in their php configuration
     if (!function_exists('json_encode') && !file_exists($quizzy_cwd . "/Zend/Json.php")) {
@@ -204,7 +208,7 @@
       $quiz_no=0;
       foreach ($quiz_xml->quiz as $cur_quiz) {
         $output .= '<p>';
-        $output .= '<input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt' . $file_no . '" onClick="quizzyState.quizFile = \'' . basename($filename) . '\'; quizzyState.quizIndex = ' . $quiz_no . ';" name="quizzy_quiz_sel">';
+        $output .= '<input type="radio" class="quizzy_quiz_opt" id="quizzy_quiz_opt' . $file_no . '" onClick="quizzyState.quizFile = \'' . basename($filename) . '\'; quizzyState.quizIndex = ' . $quiz_no . ';" name="quizzy_quiz_sel" value="' . basename($filename) . ' ' . $quiz_no . '">';
         $output .= '<label for="quizzy_quiz_opt' . $file_no . '" class="quizzy_quiz_lbl" id="quizzy_quiz_lbl' . $file_no . '">' . $cur_quiz->title . '</label>';
 
         // Add an image after the label if one was set
@@ -235,7 +239,7 @@
     // Finish up output for the quiz list
     $output .= '</div>';
     $output .= '<div class="quizzy_load_foot"><input type="submit" class="quizzy_b" id="quizzy_start_b" value="Start Quiz"></div>';
-    //$output .= '</form>';
+    $output .= '</form>';
     return $output;
   }
 

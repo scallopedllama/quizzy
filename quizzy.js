@@ -60,6 +60,13 @@ $(document).ready(function() {
   $('.quizzy_quiz_desc').hide();
   $('.quizzy_quiz_opt').attr('checked', false);
 
+  // Disable legacy mode
+  $('#quizzy_legacy_input').remove();
+  $('#quizzy_legacy_form').submit(function (e) {
+    // Don't let the form submit
+    e.preventDefault();
+  });
+
   // focus the first radio button and add a keypress handler to start the quiz when the enter key is pressed
   $('.quizzy_quiz_opt:first').focus();
   $('.quizzy_quiz_opt').keypress(function (event) {
