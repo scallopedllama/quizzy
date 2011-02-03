@@ -437,7 +437,7 @@
     }
 
     $output .= '<p class="quizzy_result_rank">' . get_quiz_string($score_range->rank) . '</p>';
-    $output .= '<div class="quizzy_result_foot"><input type="submit" onclick="restartQuizzy();" value="Do a different Quiz"></div>';
+    $output .= '<div class="quizzy_result_foot"><input type="submit" id="quizzy_reset_b" value="Do a different Quiz"></div>';
     $output .= '</div>';
 
     return $output;

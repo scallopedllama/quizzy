@@ -60,6 +60,15 @@ $(document).ready(function() {
   $('.quizzy_quiz_desc').hide();
   $('.quizzy_quiz_opt').attr('checked', false);
 
+  // focus the first radio button and add a keypress handler to start the quiz when the enter key is pressed
+  $('.quizzy_quiz_opt:first').focus();
+  $('.quizzy_quiz_opt').keypress(function (event) {
+      if (event.keyCode == '13') {
+        event.preventDefault();
+        $('#quizzy_start_b').click();
+      }
+    });
+
   // add another click event handler to the radio buttons
   $('.quizzy_quiz_opt').click(function() {
     // the user clicked on one of the options
@@ -156,11 +165,13 @@ function requestNextQuestion()
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').attr('disabled', true).hide();
     $('#quizzy_q' + quizzyState.currentQuestion + '_exp').hide();
     $('.quizzy_q_opt_val').hide();
+
     // Change the text on the check button to next if the answers aren't to be shown
     if (!quizzyState.showAnswer)
       $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').val('Next');
 
-    // add the click event to the check and next buttons
+    // add the click event handlers
+    $('#quizzy_reset_b').click(restartQuizzy);
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').click(checkQuestion);
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').click(function (){
       $('#quizzy').loading(true);
@@ -186,9 +197,10 @@ function requestNextQuestion()
       // fade in the proper button based on the value of the showAnswer setting
       $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
 
-      // Focus the text field or the first option
+      // Focus the text field, the first option, or the pick a different quiz button
       $('#quizzy_q' + quizzyState.currentQuestion + '_txt').focus();
       $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:first').focus();
+      $('#quizzy_reset_b').focus();
     });
   });
 }
@@ -376,6 +388,9 @@ function restartQuizzy()
 
       // fade the quiz select buttons back in
       $('.quizzy_quiz_b').fadeIn(quizzyState.fadeSpeed);
+
+      // Focus the first radio button
+      $('.quizzy_quiz_opt:first').focus();
 
     }); // quizzy_c
   }); // quizzy_q_c
