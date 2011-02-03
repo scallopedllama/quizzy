@@ -261,7 +261,6 @@ function checkQuestion()
 
     // have the data returned by that ajax query, set the proper div info
     $('#quizzy_q' + quizzyState.currentQuestion + '_exp').html(data.explanation);
-    // that should have set the quizzyState.correctOption and add variables
 
     // Reveal the correct answers
     switch (questionType) {
@@ -304,11 +303,6 @@ function checkQuestion()
         });
     }
 
-    // If the question is a radio type, wait some time before sliding up the wrong answers. If it's a text question, don't wait at all
-    var slideUpWait = quizzyState.slideUpWait;
-    if (questionType == 'text')
-      slideUpWait = 0;
-
     setTimeout(function() {
       // Need to build a bit of a tricky jQuery selector here. Basically, It's going to scroll up ALL the quizzy_q_opt class items
       // Except the correct answers and the one the user chose.
@@ -335,11 +329,11 @@ function checkQuestion()
           // fade in next button
           $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').attr('disabled', false).fadeIn(quizzyState.fadeSpeed).focus();
 
-        }, quizzyState.nextFadeInWait); // wait nextFadeInWait ms to fade in the next button
+        }, quizzyState.nextFadeInWait);              // to fade in the next button
 
-      }, quizzyState.expFadeInWait); 		// wait expFadeInWait ms to fade in explanation
+      }, quizzyState.expFadeInWait); 		             // to fade in explanation
 
-    }, slideUpWait); 			// wait scrollupwait ms to scroll up all but best answer
+    }, (questionType == 'input') ? 0 : slideUpWait); // to scroll up all but best answer unless the question is of input type
 
   });
 }
