@@ -42,6 +42,8 @@
   }
   if (!isset($_GET['quest_no']))
     $_GET['quest_no'] = 0;
+  if (!isset($_GET['score']))
+    $_GET['score'] = 0;
   // Look for all the $_GET['quizzy_optXX'] == 'on' values and convert them into
   // an array of strings in the format quizzy_qXX_opt . $opt . _b
   $_GET['response'] = array();
@@ -205,8 +207,6 @@
       $output .= '<input type="hidden" name="quizzy_file" value="' . $_GET['quizzy_file'] . '" class="quizzy_legacy">';
     if (isset($_GET['quizzy_index']))
       $output .= '<input type="hidden" name="quizzy_index" value="' . $_GET['quizzy_index'] . '" class="quizzy_legacy">';
-    if (isset($_GET['quest_no']))
-      $output .= '<input type="hidden" name="quest_no" value="' . $_GET['quest_no'] . '" class="quizzy_legacy">';
     return $output;
   }
 
@@ -394,7 +394,9 @@
     $output .= '</div>';
 
     // Legacy stuff: get the explanation here
-    $explanation = serve_explanation();
+    $explanation = NULL;
+    if (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation')
+      $explanation = serve_explanation();
 
     // Add the proper user input for the question
     $output .= '<div class="quizzy_q_opts">';
@@ -412,11 +414,11 @@
         // Span that will be filled with the option's score after the user clicks 'check score'
         $output .= '<span class="quizzy_q_txt_val" id="quizzy_q' . $question_no . '_txt_val">';
 
-        // Add the explanation if that's the step we're on
+        // Add the score if that's the step we're on
         if ((isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation'))
           $output .= $explanation['addScore'];
 
-        // Closing the explanation span
+        // Closing the score span
         $output .= '</span>';
 
         break;
@@ -444,11 +446,13 @@
           // Span that will be filled with the option's score after the user clicks 'check score'
           $output .= '<span class="quizzy_q_opt_val" id="quizzy_q' . $question_no . '_opt' . $option_no . '_val">';
 
-          // Add the explanation if that's the step we're on
-          if ((isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation'))
-            $output .= $explanation['optionValues'][$option_no];
+          // Add the score if that's the step we're on
+          if ((isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation')) {
+            $class = ($explanation['optionValues'][$option_no] == '✓') ? 'quizzy_opt_best' : (($explanation['optionValues'][$option_no] == '×') ? 'quizzy_opt_worst' : 'quizzy_opt_mid');
+            $output .= '<span class="' . $class . '">' . $explanation['optionValues'][$option_no] . '</span>';
+          }
 
-          // Closing the explanation span
+          // Closing the score span
           $output .= '</span>';
 
           // Finish off label and paragrah wrappers
@@ -463,9 +467,19 @@
     // Add a <div> that will be filled with the question's explanation
     $output .= '<div class="quizzy_q_exp" id="quizzy_q' . $question_no . '_exp">';
 
-    // Add the explanation in legacy mode
-    if (isset($_GET['quizzy_legacy']))
+    // Add the explanation in legacy mode and op is explanation
+    if (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation') {
       $output .= $explanation['explanation'];
+
+      // add score and increment quest_no too
+      $_GET['score'] += $explanation['addScore'];
+      $_GET['quest_no']++;
+    }
+    // Add the score and question number in hidden fields
+    if (isset($_GET['quizzy_legacy'])) {
+      $output .= '<input type="hidden" name="quest_no" value="' . $_GET['quest_no'] . '" class="quizzy_legacy">';
+      $output .= '<input type="hidden" name="quest_no" value="' . $_GET['score'] . '" class="quizzy_legacy">';
+    }
 
     // close the explanation div
     $output .= '</div>';
