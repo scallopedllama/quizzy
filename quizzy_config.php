@@ -41,7 +41,7 @@
   // Whether or not the user should get a 'check answers' but or just a 'next' button.
   // If set to FALSE, the user will enter their answer, click next, and they will never be told
   // whether or not they answered that one question correctly.
-  $quizzy_show_answer = FALSE;
+  $quizzy_show_answer = TRUE;
 
   // the dimensions of the quiz in pixels
   $quizzy_quiz_width = 280;
