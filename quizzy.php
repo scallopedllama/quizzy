@@ -60,6 +60,23 @@
 
   } // Default behavior
 
+
+  /**
+   * Legacy specific behavior:
+   *   Convert the quizzy_quiz_sel value to correctly corresponding quizzy_file and quizzy_index variables
+   *   Set a question number if one isn't already set
+   * @author Joe Balough
+   */
+  if (isset($_GET['quizzy_quiz_sel'])) {
+    $quiz_sel = explode(' ', $_GET['quizzy_quiz_sel']);
+    $_GET['quizzy_file'] = $quiz_sel[0];
+    $_GET['quizzy_index'] = $quiz_sel[1];
+  }
+  if (!isset($_GET['quest_no']))
+    $_GET['quest_no'] = 0;
+
+
+
   /**
    * Quizzy operator handeler.
    * At this point, $_GET['quizzy_opt'] must have something in there so quizzy is running on this client and requesting
@@ -177,7 +194,7 @@
     // Begin formatting the list
     $output  = '<form method="GET" style="height: 100%;" id="quizzy_legacy_form">';
     $output .= '<input type="hidden" name="quizzy_legacy" id="quizzy_legacy_input">';
-    $output .= '<input type="hidden" name="quizzy_op" value="quiz" id="quizzy_legacy_op">';
+    $output .= '<input type="hidden" name="quizzy_op" value="question" id="quizzy_legacy_op">';
     $output .= '<div class="quizzy_load_body">';
 
     // A Helpful warning for people who don't have json enabled in their php configuration
