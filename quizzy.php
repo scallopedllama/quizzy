@@ -29,6 +29,32 @@
 
 
   /**
+   * Legacy specific behavior:
+   *   Convert the quizzy_quiz_sel value to correctly corresponding quizzy_file and quizzy_index variables
+   *   Set a question number if one isn't already set
+   *   Build the response value
+   * @author Joe Balough
+   */
+  if (isset($_GET['quizzy_quiz_sel'])) {
+    $quiz_sel = explode(' ', $_GET['quizzy_quiz_sel']);
+    $_GET['quizzy_file'] = $quiz_sel[0];
+    $_GET['quizzy_index'] = $quiz_sel[1];
+  }
+  if (!isset($_GET['quest_no']))
+    $_GET['quest_no'] = 0;
+  // Look for all the $_GET['quizzy_optXX'] == 'on' values and convert them into
+  // an array of strings in the format quizzy_qXX_opt . $opt . _b
+  $_GET['response'] = array();
+  foreach ($_GET as $key => $value) {
+    if ($value != 'on')
+      continue;
+
+    // See if this $key is one of the option values and add it to the response variable if it is
+    if (preg_match('/quizzy_opt(.+)/', $key, $matches))
+      $_GET['response'][] = 'quizzy_qLL_opt' . $matches[1] . '_b';
+  }
+
+  /**
    * Default behavior: Just add the quizzy container and available quizzes
    * @author Joe Balough
    */
@@ -41,8 +67,10 @@
     // The quiz select wrapper (the left side above)
     $output .= '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px">';
 
-    // Drop the available quizzes in there
-    if (!isset($_GET['quizzy_legacy']))
+    // If in legacy, add the next step. otherwise, add the quizzes.
+    if (isset($_GET['quizzy_legacy']))
+      $output .= serve_quiz();
+    else
       $output .= serve_quizzes();
     $output .= '</div>';
 
@@ -55,26 +83,9 @@
     echo $output;
 
     // Nothing else to be done, so simply stop running this script right now.
-    if (!isset($_GET['quizzy_legacy']))
-      return;
+    return;
 
   } // Default behavior
-
-
-  /**
-   * Legacy specific behavior:
-   *   Convert the quizzy_quiz_sel value to correctly corresponding quizzy_file and quizzy_index variables
-   *   Set a question number if one isn't already set
-   * @author Joe Balough
-   */
-  if (isset($_GET['quizzy_quiz_sel'])) {
-    $quiz_sel = explode(' ', $_GET['quizzy_quiz_sel']);
-    $_GET['quizzy_file'] = $quiz_sel[0];
-    $_GET['quizzy_index'] = $quiz_sel[1];
-  }
-  if (!isset($_GET['quest_no']))
-    $_GET['quest_no'] = 0;
-
 
 
   /**
@@ -179,6 +190,28 @@
 
 
   /**
+   * This function returns the <form> elements that are needed for legacy support.
+   *
+   * @param string $op
+   *   What value should be dropped in the quizzy_op hidden field
+   * @return an HTML formatted string containing the <form>, legacy hidden value, and op hidden value
+   * @author Joe Balough
+   */
+  function legacy_form($op = 'question') {
+    $output  = '<form method="GET" style="height: 100%;" id="quizzy_legacy_form">';
+    $output .= '<input type="hidden" name="quizzy_legacy" class="quizzy_legacy">';
+    $output .= '<input type="hidden" name="quizzy_op" value="' . $op . '" class="quizzy_legacy">';
+    if (isset($_GET['quizzy_file']))
+      $output .= '<input type="hidden" name="quizzy_file" value="' . $_GET['quizzy_file'] . '" class="quizzy_legacy">';
+    if (isset($_GET['quizzy_index']))
+      $output .= '<input type="hidden" name="quizzy_index" value="' . $_GET['quizzy_index'] . '" class="quizzy_legacy">';
+    if (isset($_GET['quest_no']))
+      $output .= '<input type="hidden" name="quest_no" value="' . $_GET['quest_no'] . '" class="quizzy_legacy">';
+    return $output;
+  }
+
+
+  /**
    * The serve_quizzes function will return an HTML string that lists all of the
    * quizzes that are available in the $quizzy_quiz_folder.
    *
@@ -192,9 +225,7 @@
     $quiz_dir = dir($quizzy_cwd . '/' . $quizzy_quiz_folder);
 
     // Begin formatting the list
-    $output  = '<form method="GET" style="height: 100%;" id="quizzy_legacy_form">';
-    $output .= '<input type="hidden" name="quizzy_legacy" id="quizzy_legacy_input">';
-    $output .= '<input type="hidden" name="quizzy_op" value="question" id="quizzy_legacy_op">';
+    $output  = legacy_form();
     $output .= '<div class="quizzy_load_body">';
 
     // A Helpful warning for people who don't have json enabled in their php configuration
@@ -285,12 +316,27 @@
     $quiz = load_quiz();
     $quiz_title = get_quiz_string($quiz->title);
 
-    // Find the number of questions and quiz title and add it to the return
-    $output['numQuestions'] = count($quiz->question);
-
     // Build the quiz container
     $output['quiz']  = '<div class="quizzy_title">' . $quiz_title . '</div>';
     $output['quiz'] .= '<div id="quizzy_q_c">';
+
+    // Handle legacy
+    if (isset($_GET['quizzy_legacy'])) {
+      // Add the form stuff and the question
+      $op = array('question' => 'explanation', 'explanation' => 'question');
+      $output['quiz'] .= legacy_form($op[$_GET['quizzy_op']]);
+      $output['quiz'] .= serve_question();
+
+      // Close the div and the form from above before returning
+      $output['quiz'] .= '</form>';
+      $output['quiz'] .= '</div>';
+
+      // Return only the quiz HTML text
+      return $output['quiz'];
+    }
+
+    // Find the number of questions and quiz title and add it to the return
+    $output['numQuestions'] = count($quiz->question);
 
     // Every question <div>. Note that we're making one extra for the results page.
     for ($i = 0; $i < $output['numQuestions'] + 1; $i++)
@@ -347,6 +393,9 @@
     $output .= '<p>' . get_quiz_string($quest->text) . '</p>';
     $output .= '</div>';
 
+    // Legacy stuff: get the explanation here
+    $explanation = serve_explanation();
+
     // Add the proper user input for the question
     $output .= '<div class="quizzy_q_opts">';
     // Drop a clue as to what kind of question this is
@@ -361,7 +410,14 @@
         $output .= '>';
 
         // Span that will be filled with the option's score after the user clicks 'check score'
-        $output .= '<span class="quizzy_q_txt_val" id="quizzy_q' . $question_no . '_txt_val"></span>';
+        $output .= '<span class="quizzy_q_txt_val" id="quizzy_q' . $question_no . '_txt_val">';
+
+        // Add the explanation if that's the step we're on
+        if ((isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation'))
+          $output .= $explanation['addScore'];
+
+        // Closing the explanation span
+        $output .= '</span>';
 
         break;
 
@@ -375,7 +431,7 @@
           $output .= '<p class="quizzy_q_opt" id="quizzy_q' . $question_no . '_opt' . $option_no . '">';
 
           // Radio / check button
-          $output .= '<input type="' . $question_type . '" name="quizzy_q' . $question_no . '" class="quizzy_q_opt_b quizzy_q' . $question_no . '_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
+          $output .= '<input type="' . $question_type . '" name="quizzy_opt' . $option_no . '" class="quizzy_q_opt_b quizzy_q' . $question_no . '_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
 
           // Label
           $output .= '<label for="quizzy_q' . $question_no . '_opt' . $option_no . '_b">' . get_quiz_string($opt->text);
@@ -386,7 +442,14 @@
           }
 
           // Span that will be filled with the option's score after the user clicks 'check score'
-          $output .= '<span class="quizzy_q_opt_val" id="quizzy_q' . $question_no . '_opt' . $option_no . '_val"></span>';
+          $output .= '<span class="quizzy_q_opt_val" id="quizzy_q' . $question_no . '_opt' . $option_no . '_val">';
+
+          // Add the explanation if that's the step we're on
+          if ((isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation'))
+            $output .= $explanation['optionValues'][$option_no];
+
+          // Closing the explanation span
+          $output .= '</span>';
 
           // Finish off label and paragrah wrappers
           $output .= '</label>';
@@ -397,16 +460,26 @@
         break;
     }
 
-    // Add an empty <div> that will be filled with the question's explanation
-    $output .= '<div class="quizzy_q_exp" id="quizzy_q' . $question_no . '_exp"></div>';
+    // Add a <div> that will be filled with the question's explanation
+    $output .= '<div class="quizzy_q_exp" id="quizzy_q' . $question_no . '_exp">';
+
+    // Add the explanation in legacy mode
+    if (isset($_GET['quizzy_legacy']))
+      $output .= $explanation['explanation'];
+
+    // close the explanation div
+    $output .= '</div>';
 
     // Finish off options wrapper
     $output .= '</div>';
 
     // Footer <div> with Check Answer buttno and Next button
     $output .= '<div class="quizzy_q_foot">';
-    $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_chk" value="Check Answer">';
-    $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_nxt" value="Next">';
+
+    if (!isset($_GET['quizzy_legacy']) || (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] != 'explanation'))
+      $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_chk" value="Check Answer">';
+    if (!isset($_GET['quizzy_legacy']) || (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation'))
+      $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_nxt" value="Next">';
     $output .= '</div>';
 
     return $output;
@@ -632,7 +705,11 @@
       $output = array('addScore' => $addScore);
     }
 
-    return _json_encode($output);
+    // Don't JSON encode the string if we're running legacy mode
+    if (isset($_GET['quizzy_legacy']))
+      return $output;
+    else
+      return _json_encode($output);
   }
 
 

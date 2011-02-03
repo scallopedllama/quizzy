@@ -61,7 +61,7 @@ $(document).ready(function() {
   $('.quizzy_quiz_opt').attr('checked', false);
 
   // Disable legacy mode
-  $('#quizzy_legacy_input').remove();
+  $('.quizzy_legacy').remove();
   $('#quizzy_legacy_form').submit(function (e) {
     // Don't let the form submit
     e.preventDefault();
