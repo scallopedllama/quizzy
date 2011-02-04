@@ -40,16 +40,16 @@
     $_GET['quizzy_file'] = $quiz_sel[0];
     $_GET['quizzy_index'] = $quiz_sel[1];
   }
-  // Look for all the $_GET['quizzy_optXX'] == 'on' values and convert them into
+  // Look for the $_GET['response'] variables convert them into
   // an array of strings in the format quizzy_qXX_opt . $opt . _b
   $_GET['response'] = array();
+  $_GET['legacy_responses'] = array();
   foreach ($_GET as $key => $value) {
-    if ($value != 'on')
-      continue;
-
     // See if this $key is one of the option values and add it to the response variable if it is
-    if (preg_match('/quizzy_opt(.+)/', $key, $matches))
-      $_GET['response'][] = 'quizzy_qLL_opt' . $matches[1] . '_b';
+    if (preg_match('/legacy_response_(.+)/', $key, $matches)) {
+      $_GET['response'][] = 'quizzy_qLL_opt' . $value . '_b';
+      $_GET['legacy_responses'][$value] = TRUE;
+    }
   }
 
   /**
@@ -434,7 +434,16 @@
           $output .= '<p class="quizzy_q_opt" id="quizzy_q' . $question_no . '_opt' . $option_no . '">';
 
           // Radio / check button
-          $output .= '<input type="' . $question_type . '" name="quizzy_opt' . $option_no . '" class="quizzy_q_opt_b quizzy_q' . $question_no . '_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b">';
+          // For legacy mode, if they're radio butons, they all must be the same name. But if they're checkboxes, they all must have unique names.
+          $name = ($question_type == 'checkbox') ? 'legacy_response_' . $option_no : 'legacy_response_R';
+
+          // if in legacy and doing explanation, check the user's reponses and disable the buttons
+          $legacy_options = '';
+          if (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation') {
+            $legacy_options .= empty($_GET['legacy_responses'][$option_no]) ? '' : ' checked';
+            $legacy_options .= ' disabled="true"';
+          }
+          $output .= '<input type="' . $question_type . '" name="' . $name . '" value="' . $option_no . '" class="quizzy_q_opt_b quizzy_q' . $question_no . '_opt_b" id="quizzy_q' . $question_no . '_opt' . $option_no . '_b"' . $legacy_options . '>';
 
           // Label
           $output .= '<label for="quizzy_q' . $question_no . '_opt' . $option_no . '_b">' . get_quiz_string($opt->text);
