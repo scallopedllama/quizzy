@@ -40,10 +40,6 @@
     $_GET['quizzy_file'] = $quiz_sel[0];
     $_GET['quizzy_index'] = $quiz_sel[1];
   }
-  if (!isset($_GET['quest_no']))
-    $_GET['quest_no'] = 0;
-  if (!isset($_GET['score']))
-    $_GET['score'] = 0;
   // Look for all the $_GET['quizzy_optXX'] == 'on' values and convert them into
   // an array of strings in the format quizzy_qXX_opt . $opt . _b
   $_GET['response'] = array();
@@ -69,9 +65,18 @@
     // The quiz select wrapper (the left side above)
     $output .= '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px">';
 
-    // If in legacy, add the next step. otherwise, add the quizzes.
-    if (isset($_GET['quizzy_legacy']))
+    // Handle the legacy stuff
+    if (isset($_GET['quizzy_legacy'])) {
+      // Add the form stuff and the question
+      $op = array('question' => 'explanation', 'explanation' => 'question');
+      $output .= legacy_form($op[$_GET['quizzy_op']]);
+
       $output .= serve_quiz();
+
+      $output .= '<input type="hidden" name="quest_no" value="' . $_GET['quest_no'] . '" class="quizzy_legacy">';
+      $output .= '<input type="hidden" name="score" value="' . $_GET['score'] . '" class="quizzy_legacy">';
+      $output .= '</form>';
+    }
     else
       $output .= serve_quizzes();
     $output .= '</div>';
@@ -226,6 +231,8 @@
 
     // Begin formatting the list
     $output  = legacy_form();
+    $output .= '<input type="hidden" name="quest_no" value="0" class="quizzy_legacy">';
+    $output .= '<input type="hidden" name="score" value="0" class="quizzy_legacy">';
     $output .= '<div class="quizzy_load_body">';
 
     // A Helpful warning for people who don't have json enabled in their php configuration
@@ -322,13 +329,7 @@
 
     // Handle legacy
     if (isset($_GET['quizzy_legacy'])) {
-      // Add the form stuff and the question
-      $op = array('question' => 'explanation', 'explanation' => 'question');
-      $output['quiz'] .= legacy_form($op[$_GET['quizzy_op']]);
       $output['quiz'] .= serve_question();
-
-      // Close the div and the form from above before returning
-      $output['quiz'] .= '</form>';
       $output['quiz'] .= '</div>';
 
       // Return only the quiz HTML text
@@ -474,11 +475,6 @@
       // add score and increment quest_no too
       $_GET['score'] += $explanation['addScore'];
       $_GET['quest_no']++;
-    }
-    // Add the score and question number in hidden fields
-    if (isset($_GET['quizzy_legacy'])) {
-      $output .= '<input type="hidden" name="quest_no" value="' . $_GET['quest_no'] . '" class="quizzy_legacy">';
-      $output .= '<input type="hidden" name="quest_no" value="' . $_GET['score'] . '" class="quizzy_legacy">';
     }
 
     // close the explanation div
