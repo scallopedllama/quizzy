@@ -55,6 +55,9 @@
       }
     }
   }
+  // Make sure the user made a response if the op is explanation
+  if (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation' && empty($_GET['response']))
+    $_GET['quizzy_op'] = 'question';
 
   /**
    * Default behavior: Just add the quizzy container and available quizzes
