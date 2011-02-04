@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<quizzes>
+  <quiz>
+    <title>Futurama Quote Quiz</title>
+    <description>
+      <text>Test your Futurama Knowledge</text>
+    </description>
+    <grading>
+      <range start="0" end="60">
+        <grade>F</grade>
+        <rank>Epic Fail Guy</rank>
+        <img src="f.jpg" alt="efg" />
+      </range>
+      <range start="60" end="70">
+        <grade>D</grade>
+        <rank>You are Terrible!</rank>
+        <img src="d.jpg" alt="bad" />
+      </range>
+      <range start="70" end="80">
+        <grade>C</grade>
+        <rank>Average... I guess</rank>
+        <img src="c.jpg" alt="average" />
+      </range>
+      <range start="80" end="90">
+        <grade>B</grade>
+        <rank>Lookin' good</rank>
+        <img src="b.jpg" alt="good" />
+      </range>
+      <range start="90" end="100">
+        <grade>A</grade>
+        <rank>You rock!</rank>
+        <img src="a.jpg" alt="rock" />
+      </range>
+    </grading>
+    <question>
+      <text>"Fry, stop stuffing your craw and save us!"</text>
+      <option>
+        <text>Bender</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Leela.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Fry</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Leela.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Leela</text>
+        <score>1</score>
+        <explanation>
+          <text>Correct!</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Professor Farnsworth</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Leela.</text>
+        </explanation>
+      </option>
+    </question>
+    <question>
+      <text>"Your music is bad and you should feel bad"</text>
+      <option>
+        <text>Leela</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Dr. Zoidberg.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Fry</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Dr. Zoidberg.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Professor Farnsworth</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Dr. Zoidberg.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Dr. Zoidberg</text>
+        <score>1</score>
+        <explanation>
+          <text>Correct!</text>
+        </explanation>
+      </option>
+    </question>
+    <question>
+      <text>"Ooh! Big Pink! It's the only gum with the breath-freshening power of ham."</text>
+      <option>
+        <text>Leela</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Fry.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Professor Farnsworth</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Fry.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Fry</text>
+        <score>1</score>
+        <explanation>
+          <text>Yes</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Dr. Zoidberg</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Fry.</text>
+        </explanation>
+      </option>
+    </question>
+    <question>
+      <text>"And it pinkens your teeth while you chew!"</text>
+      <option>
+        <text>Leela</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Bender.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Bender</text>
+        <score>1</score>
+        <explanation>
+          <text>That's right!</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Fry</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Bender.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Dr. Zoidberg</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Bender.</text>
+        </explanation>
+      </option>
+    </question>
+    <question>
+      <text>"Behold! The internet!"</text>
+      <option>
+        <text>Leela</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Bender.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Bender</text>
+        <score>1</score>
+        <explanation>
+          <text>That's right!</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Fry</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Bender.</text>
+        </explanation>
+      </option>
+      <option>
+        <text>Dr. Zoidberg</text>
+        <score>0</score>
+        <explanation>
+          <text>Nope! It was Bender.</text>
+        </explanation>
+      </option>
+    </question>
+  </quiz>
+</quizzes>

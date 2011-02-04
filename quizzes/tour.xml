@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<quizzes>
+  <quiz>
+    <title>Feature Tour</title>
+    <img src="tour.png" />
+    <description>
+      <text>Take this quiz to get a demonstration of what quizzy can do!</text>
+      <img src="tour.png" />
+    </description>
+    <grading>
+      <range start="0" end="100">
+        <grade>Complete</grade>
+        <rank>That's all!</rank>
+        <img src="a.jpg" alt="rock" />
+      </range>
+    </grading>
+
+
+
+
+    <question>
+      <text>Each question has this block of question text</text>
+      <option>
+        <text>with as many</text>
+        <score>1</score>
+      </option>
+      <option>
+        <text>options</text>
+        <score>1</score>
+      </option>
+      <option>
+        <text>as you want.</text>
+        <score>1</score>
+      </option>
+      <explanation><text>and each option can have a unique block of text to explain the scoring to the user.</text></explanation>
+    </question>
+
+
+    <question>
+      <text>You can add pictures to the quiz description, the question text,</text>
+      <img src="t.jpg" alt="text" />
+      <option>
+        <text>any option,</text>
+        <score>1</score>
+      </option>
+      <option>
+        <img src="o1.jpg" alt="option 1" />
+        <score>1</score>
+      </option>
+      <option>
+        <img src="o2.jpg" alt="option 2" />
+        <score>1</score>
+      </option>
+      <explanation>
+        <text>and any explanation.</text>
+        <img src="e.jpg" alt="explanation" />
+      </explanation>
+    </question>
+
+
+    <question>
+      <text>You can add as many questions as you'd like.</text>
+      <option>
+        <text>All data is loaded</text>
+        <score>1 </score>
+      </option>
+      <option>
+        <text>via AJAX when the</text>
+        <score>1 </score>
+      </option>
+      <option>
+        <text>user clicks the</text>
+        <score>1</score>
+      </option>
+      <option>
+        <text>"Check Answer" or</text>
+        <score>1</score>
+      </option>
+      <option>
+        <text>the "Next Question"</text>
+        <score>1</score>
+      </option>
+      <option>
+        <text>button.</text>
+        <score>1</score>
+      </option>
+      <explanation><text>That means the user can't cheat by looking at the page source.</text></explanation>
+    </question>
+
+
+    <question>
+      <text>All the quiz data is based on XML so making quizzes is very easy.</text>
+      <option>
+        <text>Sounds easy!</text>
+        <score>4</score>
+        <explanation><text>You can also use the quizzyBuilder to make a quiz graphically.</text></explanation>
+      </option>
+      <option>
+        <text>Sounds hard!</text>
+        <score>4</score>
+        <explanation><text>Maybe, but you can also use the quizzyBuilder to make a quiz graphically.</text></explanation>
+      </option>
+    </question>
+
+
+    <question>
+      <text>Good browser compatibility! Tested in IE 6+, Firefox, Chrome, Safari 4+, Opera 8+, and Konqueror.</text>
+      <option>
+        <text>Probably some quirks</text>
+        <score>2</score>
+        <explanation><text>Nothing that shatters usability. Just one minor aesthetic bug in Opera really.</text></explanation>
+      </option>
+      <option>
+        <text>Sounds good</text>
+        <score>2</score>
+        <explanation><text>But there is just one minor aesthetic bug in Opera. Nothing that shatters usibility at all.</text></explanation>
+      </option>
+    </question>
+
+
+    <question>
+      <text>quizzy even works when the user has JavaScript disabled!</text>
+      <option>
+        <text>What?</text>
+        <score>2</score>
+        </option>
+      <option>
+        <text>How?</text>
+        <score>2</score>
+      </option>
+      <explanation><text>Each step of the quiz occurs after a form submit using GET. Give it a try, disable JavaScript and reload this page!</text></explanation>
+    </question>
+
+
+    <question>
+      <text>You can use Multiple-Choice Questions where you can assign an arbitrary number of points to each option.</text>
+      <option>
+        <text>One point</text>
+        <score>1</score>
+        <explanation><text>You selected one so I gave you one. The highest score is considered the "best."</text></explanation>
+      </option>
+      <option>
+        <text>Two points</text>
+        <score>2</score>
+        <explanation><text>You selected two so I gave you two. The highest score is considered the "best."</text></explanation>
+      </option>
+      <option>
+        <text>Three Points</text>
+        <score>3</score>
+        <explanation><text>You selected three so I gave you three. The highest score is considered the "best."</text></explanation>
+      </option>
+      <option>
+        <text>Four Points</text>
+        <score>4</score>
+        <explanation><text>You selected four so I gave you four. The highest score is considered the "best."</text></explanation>
+      </option>
+    </question>
+
+
+    <question type="checkbox">
+      <text>You can use Select-All-That-Apply Question where each selected option adds a certain value to the user's score.</text>
+      <option>
+        <text>Add one</text>
+        <score>1</score>
+      </option>
+      <option>
+        <text>Add two</text>
+        <score>2</score>
+      </option>
+      <option>
+        <text>Remove 4</text>
+        <score>-4</score>
+      </option>
+      <option>
+        <text>Add 3</text>
+        <score>3</score>
+      </option>
+      <explanation><text>This type of question only has one explanation to explain all possible answers.</text></explanation>
+    </question>
+
+
+    <question type="input">
+      <text>And you can use three different types of Text-Input Questions. This one takes a sentence and tries to be lenient when grading. Enter the string "Hello, happy world!"</text>
+      <answer type="text">
+        <value>Hello, happy world!</value>
+        <score>3</score>
+      <explanation><text>You can specify more than one correct answer for these types of questions too. And each of those answers can provide a different score. Next time, try entering "Hi, happy world!."</text></explanation>
+      </answer>
+      <answer type="text">
+        <value>Hi, happy world!</value>
+        <score>2</score>
+      <explanation><text>Since you didn't do exactly what I asked, you only get 2 points for this answer.</text></explanation>
+      </answer>
+      <answer type="text">
+        <value>Hey, happy world!</value>
+        <score>2</score>
+      <explanation><text>You found the secret answer! But since you didn't do exactly what I asked, you only get 2 points for this answer.</text></explanation>
+      </answer>
+      <explanation><text>You did not enter the text like I asked so you don't get any points.</text></explanation>
+    </question>
+
+
+    <question type="input">
+      <text>This Text-based question is looking for an exact input. Use this for things like code. Enter the string "echo 'foobar' | grep foo"</text>
+      <answer type="exact">
+        <value>echo 'foobar' | grep foo</value>
+        <score>3</score>
+        <explanation><text>You only got the points because you entered the string exactly correctly. Try changing it a bit next time.</text></explanation>
+      </answer>
+      <explanation><text>You don't get any points because you didn't enter exactly that string.</text></explanation>
+    </question>
+
+
+    <question type="input">
+      <text>The last Text-based question type is for numbers. quizzy parses the user input to a float value and offer's some wiggle room to the user (which is changable in the settings). Try entering 56.3 +/- 0.05</text>
+      <answer type="number">
+        <value>56.3</value>
+        <score>3</score>
+        <explanation><text>You got the points because you entered a value between 56.25 and 56.35</text></explanation>
+      </answer>
+      <explanation><text>The number you entered must have been outside the range of 56.25 to 56.35</text></explanation>
+    </question>
+
+
+    <question>
+      <text>You can specify an explanation to use for all options, unique explanations for each option, or use no explanation at all.</text>
+      <option>
+        <text>Global Explanation</text>
+        <score>2</score>
+      </option>
+      <option>
+        <text>Unique Explanation</text>
+        <score>2</score>
+        <explanation><text>This is not a standard explanation.</text></explanation>
+      </option>
+      <option>
+        <text>Global Explanation</text>
+        <score>2</score>
+      </option>
+      <option>
+        <text>Global Explanation</text>
+        <score>2</score>
+      </option>
+      <option>
+        <text>No Explanation</text>
+        <score>2</score>
+        <explanation><text></text></explanation>
+      </option>
+      <explanation><text>This is the standard explanation. For Text-based questions, this explanation would be used for all wrong answers.</text></explanation>
+    </question>
+
+
+    <question>
+      <text>quizzy also features a robust scoring system where you can define grades and ranks to percent correct.</text>
+      <option>
+        <text>Neat!</text>
+        <score>4</score>
+        <explanation><text>You can even add a unique picture for each rank.</text></explanation>
+      </option>
+    </question>
+
+    <question>
+      <text>It's easy to customize quizzy too. Just edit the quizzy_config.php file.</text>
+      <option>
+        <text>Custom welcome message</text>
+        <score>2</score>
+        <explanation><text>Instructs the user to pick a quiz.</text></explanation>
+      </option>
+      <option>
+        <text>Custom finishing message</text>
+        <score>2</score>
+        <explanation><text>Displayed to the user when they complete a quiz</text></explanation>
+      </option>
+      <option>
+        <text>Easy sizing</text>
+        <score>2</score>
+        <explanation><text>Just change the width and height in the config file and quizzy takes care of the rest!</text></explanation>
+      </option>
+      <option>
+        <text>Don't want the users to see the correct answers?</text>
+        <score>2</score>
+        <explanation><text>Just change the setting and quizzy will advance to the next question after the user answers.</text></explanation>
+      </option>
+      <option>
+        <text>Number-input question strictness</text>
+        <score>2</score>
+        <explanation><text>Specifies the range where quizzy will consider a number answer correct.</text></explanation>
+      </option>
+      <option>
+        <text>JavaScript settings too?</text>
+        <score>2</score>
+        <explanation><text>You bet! You can even set several options relating to how the jQuery animations work.</text></explanation>
+      </option>
+    </question>
+
+
+    <question>
+      <text>As many quizzes as you want from as many xml files you want.</text>
+      <option>
+        <text>4 quizzes in one file?</text>
+        <score>2</score>
+        <explanation><text>No problem. Each quiz will appear in the list.</text></explanation>
+      </option>
+      <option>
+        <text>1 quiz per file?</text>
+        <score>2</score>
+        <explanation><text>Go ahead. It won't look any different to the user.</text></explanation>
+      </option>
+    </question>
+
+
+  </quiz>
+</quizzes>
