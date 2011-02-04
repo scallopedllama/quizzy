@@ -720,7 +720,10 @@
         }
 
         // Get the explanation
-        $exp = ($quest['type'] == 'checkbox') ? $quest->explanation : $sel_opts[0]->explanation;
+        if ($quest['type'] == 'checkbox' || !isset($sel_opts[0]->explanation))
+          $exp = $quest->explanation;
+        else
+          $exp = $sel_opts[0]->explanation;
 
         break;
     }
