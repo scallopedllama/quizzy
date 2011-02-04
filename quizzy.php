@@ -30,11 +30,13 @@
 
   /**
    * Legacy specific behavior:
+   *   Reset if that was requested
    *   Convert the quizzy_quiz_sel value to correctly corresponding quizzy_file and quizzy_index variables
-   *   Set a question number if one isn't already set
    *   Build the response value
    * @author Joe Balough
    */
+  if (isset($_GET['quizzy_reset']))
+    $_GET = array();
   if (isset($_GET['quizzy_quiz_sel'])) {
     $quiz_sel = explode(' ', $_GET['quizzy_quiz_sel']);
     $_GET['quizzy_file'] = $quiz_sel[0];
@@ -42,13 +44,15 @@
   }
   // Look for the $_GET['response'] variables convert them into
   // an array of strings in the format quizzy_qXX_opt . $opt . _b
-  $_GET['response'] = array();
-  $_GET['legacy_responses'] = array();
-  foreach ($_GET as $key => $value) {
-    // See if this $key is one of the option values and add it to the response variable if it is
-    if (preg_match('/legacy_response_(.+)/', $key, $matches)) {
-      $_GET['response'][] = 'quizzy_qLL_opt' . $value . '_b';
-      $_GET['legacy_responses'][$value] = TRUE;
+  if (!isset($_GET['response'])) {
+    $_GET['response'] = array();
+    $_GET['legacy_responses'] = array();
+    foreach ($_GET as $key => $value) {
+      // See if this $key is one of the option values and add it to the response variable if it is
+      if (preg_match('/legacy_response_(.+)/', $key, $matches)) {
+        $_GET['response'][] = 'quizzy_qLL_opt' . $value . '_b';
+        $_GET['legacy_responses'][$value] = TRUE;
+      }
     }
   }
 
@@ -405,12 +409,20 @@
     $output .= '<input type="hidden" value="' . $question_type . '" id="quizzy_q' . $question_no . '_type">';
     switch ($question_type) {
       case 'input':
+        // if in legacy and doing explanation, put the user's response in the box, disable it and make it narrower
+        $legacy_options = '';
+        if (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation') {
+          // Trick the code below into filling in the text field with the user's response
+          $quest->default = $_GET['response'];
+          $legacy_options .= ' disabled="true" style="width: 87%"';
+        }
+
         // Don't need much for the input-type questions. Add the input field
-        $output .= '<input type="text" name="quizzy_q' . $question_no . '" class="quizzy_q_txt" id="quizzy_q' . $question_no . '_txt"';
+        $output .= '<input type="text" name="response" class="quizzy_q_txt" id="quizzy_q' . $question_no . '_txt"';
         // Add the default value if it was set
         if (isset($quest->default))
           $output .= 'value="' . get_quiz_string($quest->default) . '"';
-        $output .= '>';
+        $output .= $legacy_options . '>';
 
         // Span that will be filled with the option's score after the user clicks 'check score'
         $output .= '<span class="quizzy_q_txt_val" id="quizzy_q' . $question_no . '_txt_val">';
@@ -560,6 +572,7 @@
     }
 
     $output .= '<p class="quizzy_result_rank">' . get_quiz_string($score_range->rank) . '</p>';
+    $output .= '<input type="hidden" name="quizzy_reset" class="quizzy_legacy">';
     $output .= '<div class="quizzy_result_foot"><input type="submit" id="quizzy_reset_b" value="Do a different Quiz"></div>';
     $output .= '</div>';
 
