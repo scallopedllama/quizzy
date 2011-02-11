@@ -373,7 +373,7 @@
    * @author Joe Balough
    */
   function serve_question() {
-    global $quizzy_pic_dir;
+    global $quizzy_pic_dir, $quizzy_show_score;
 
     // What will be output
     $output = '<div class="quizzy_q_ic">';
@@ -512,6 +512,9 @@
 
     // Footer <div> with Check Answer buttno and Next button
     $output .= '<div class="quizzy_q_foot">';
+
+    if ($quizzy_show_score)
+      $output .= '<p>Score: ' . $_GET['score'] . '</p>';
 
     if (!isset($_GET['quizzy_legacy']) || (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] != 'explanation'))
       $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_chk" value="Check Answer">';

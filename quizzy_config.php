@@ -47,6 +47,9 @@
   $quizzy_quiz_width = 280;
   $quizzy_quiz_height = 400;
 
+  // Whether or not to show the user their score in the question footer by the next button
+  $quizzy_show_score = TRUE;
+
   // The message to display above the list of quiz names that the user would select
   // this is put in an h1 tag
   $quizzy_pick_quiz_message = 'Please Select a Quiz';

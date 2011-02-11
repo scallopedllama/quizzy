@@ -164,6 +164,10 @@
   overflow:hidden;
 }
 
+.quizzy_q_foot p{
+  float:left;
+}
+
 .quizzy_q_foot input {
   margin-right: 4px;
 }
