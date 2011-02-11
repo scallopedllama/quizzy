@@ -514,7 +514,7 @@
     $output .= '<div class="quizzy_q_foot">';
 
     if ($quizzy_show_score)
-      $output .= '<p>Score: ' . $_GET['score'] . '</p>';
+      $output .= '<p>Score: <span class="quizzy_score">' . $_GET['score'] . '</span></p>';
 
     if (!isset($_GET['quizzy_legacy']) || (isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] != 'explanation'))
       $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_chk" value="Check Answer">';
