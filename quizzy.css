@@ -35,12 +35,17 @@
   height: 100%;
   float: left;
   overflow: auto;
+}
+
+.quizzy_load_ic{
+  /* Required to make bottom:0px; in the .quizzy_q_foot put that div to the bottom */
   position: relative;
 }
 
 .quizzy_load_foot{
+  /* These two attributes make the footer float 3 px off the bottom of the pane */
   position: absolute;
-  bottom: 0px;
+  bottom: 3px;
   width: 100%;
 }
 

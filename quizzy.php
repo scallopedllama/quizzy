@@ -72,7 +72,7 @@
     // The quiz select wrapper (the left side above)
     $output .= '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px">';
     // quiz select inner wrapper
-    //$output .= '<div class="quizzy_q_ic">';
+    $output .= '<div class="quizzy_load_ic">';
 
     // Handle the legacy stuff
     if (isset($_GET['quizzy_legacy'])) {
@@ -89,12 +89,12 @@
     else
       $output .= serve_quizzes();
     $output .= '</div>';
+    $output .= '</div>';
 
     // And the quiz wrapper (the right side above)
     $output .= '<div id="quizzy_quiz" style="width: ' . ($quizzy_quiz_width * 2) . 'px"></div>';
     $output .= '</div>';
     $output .= '</div>';
-    //$output .= '</div>';
 
     // Print the generated output
     echo $output;
