@@ -40,6 +40,7 @@
 .quizzy_load_ic{
   /* Required to make bottom:0px; in the .quizzy_q_foot put that div to the bottom */
   position: relative;
+  min-height: 95%;
 }
 
 .quizzy_load_body{
