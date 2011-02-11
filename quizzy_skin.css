@@ -2,7 +2,7 @@
  * This file is part of quizzy.
  *
  * quizzy is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as 
+ * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
  *
@@ -11,11 +11,11 @@
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public 
+ * You should have received a copy of the GNU Affero General Public
  * License along with quizzy. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* helpful stuffs:  
+/* helpful stuffs:
   * { outline: 2px dotted red }
   * * { outline: 2px dotted green }
   * * * { outline: 2px dotted orange }
@@ -32,7 +32,7 @@
   border: 1px solid #f4f4f4;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
-  
+
   /*
    * NOTE: using position: absolute is ok here, but
    * it will BREAK jquery loading (and your user won't be
@@ -47,9 +47,6 @@
 
 
 /*pick quiz screen*/
-#quizzy_load {
-  overflow: hidden;
-}
 
 #quizzy_load h1 {
   margin: 2px;
@@ -66,14 +63,8 @@
   -webkit-border-radius: 5px;
 }
 
-.quizzy_load_body {
-  height: 90%;
-}
-
 .quizzy_load_foot {
-  height: 10%;
   text-align:right;
-  padding: 3px;
 }
 
 .quizzy_title{

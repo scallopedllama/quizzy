@@ -71,6 +71,8 @@
     $output .= '<div id="quizzy_c" style="width: ' . ($quizzy_quiz_width * 3) . 'px">';
     // The quiz select wrapper (the left side above)
     $output .= '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px">';
+    // quiz select inner wrapper
+    //$output .= '<div class="quizzy_q_ic">';
 
     // Handle the legacy stuff
     if (isset($_GET['quizzy_legacy'])) {
@@ -92,6 +94,7 @@
     $output .= '<div id="quizzy_quiz" style="width: ' . ($quizzy_quiz_width * 2) . 'px"></div>';
     $output .= '</div>';
     $output .= '</div>';
+    //$output .= '</div>';
 
     // Print the generated output
     echo $output;
@@ -372,8 +375,8 @@
   function serve_question() {
     global $quizzy_pic_dir;
 
-    // What will be outputted
-    $output = '';
+    // What will be output
+    $output = '<div class="quizzy_q_ic">';
 
     // Load up the XML file
     $quiz = load_quiz();
@@ -516,6 +519,7 @@
       $output .= '<input type="submit" class="quizzy_q_foot_b" id="quizzy_q' . $question_no . '_foot_nxt" value="Next">';
     $output .= '</div>';
 
+    $output .= '</div>';
     return $output;
   }
 

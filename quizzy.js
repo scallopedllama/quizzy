@@ -208,6 +208,9 @@ function requestNextQuestion()
       $('#quizzy_q' + quizzyState.currentQuestion + '_txt').focus();
       $('.quizzy_q' + quizzyState.currentQuestion + '_opt_b:first').focus();
       $('#quizzy_reset_b').focus();
+
+      // Want the question to be scrolled to the top so it can be read first.
+      $('#quizzy_q' + quizzyState.currentQuestion).scrollTop(0);
     });
   });
 }
