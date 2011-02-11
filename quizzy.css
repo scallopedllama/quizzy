@@ -42,6 +42,10 @@
   position: relative;
 }
 
+.quizzy_load_body{
+  padding-bottom: 25pt;
+}
+
 .quizzy_load_foot{
   /* These two attributes make the footer float 3 px off the bottom of the pane */
   position: absolute;
