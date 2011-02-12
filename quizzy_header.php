@@ -31,7 +31,8 @@
     /*Max width and height are not suppored by ie 6 so for those browsers, we're just going
       to set the images' width and height to the max percentages.
     */
-    #quizzy_load img{ width: 30%; }
+    #quizzy_load img{ height: 12pt; }
+    .quizzy_quiz_desc img {display: none;}
     .quizzy_q_body img {width: 45%; }
     .quizzy_q_opts img {height: 12pt;}
     .quizzy_q_exp img {width: 45%; height: auto;}
