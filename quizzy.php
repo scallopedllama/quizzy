@@ -512,7 +512,7 @@
 
     // Add the score if desired
     if ($quizzy_show_score)
-      $output .= '<div class="quizzy_q_foot"><p>Score: <span class="quizzy_score">' . $_GET['score'] . '</span></p></div>';
+      $output .= '<div class="quizzy_q_foot quizzy_score"><p>Score: <span class="quizzy_score_val">' . $_GET['score'] . '</span></p></div>';
 
     // Footer <div> with Check Answer button and Next button
     $output .= '<div class="quizzy_q_foot">';

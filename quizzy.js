@@ -340,7 +340,7 @@ function checkQuestion()
       $('.quizzy_q_opt' + correctSel + pickedSel).slideUp(quizzyState.slideSpeed);
 
       // Change the score div
-      $('.quizzy_score').fadeOut(quizzyState.fadeSpeed, function () {
+      $('.quizzy_score_val').fadeOut(quizzyState.fadeSpeed, function () {
         $(this).html(quizzyState.score).fadeIn(quizzyState.fadeSpeed);
       });
 
