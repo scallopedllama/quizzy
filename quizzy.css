@@ -74,6 +74,7 @@
 
 .quizzy_title {
   overflow: hidden;
+  height: 10%;
 }
 
 #quizzy_q_c
