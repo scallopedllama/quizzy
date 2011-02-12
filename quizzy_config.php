@@ -62,6 +62,8 @@
   // answer that is +- this value so if the answer is 1.00, it would accept 0.95 < answer < 1.05.
   $quizzy_number_strictness = 0.05;
 
+  // The following strings are used to indicate what options of the question were correct (top score)
+  // or incorrect (botom score). They are not used when there are more than 2 scores across all the options.
   $quizzy_correct_answer_character = '✓';
   $quizzy_wrong_answer_character = '×';
 
