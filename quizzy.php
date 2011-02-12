@@ -476,7 +476,7 @@
 
           // Add the score if that's the step we're on
           if ((isset($_GET['quizzy_legacy']) && $_GET['quizzy_op'] == 'explanation')) {
-            $class = ($explanation['optionValues'][$option_no] == '✓') ? 'quizzy_opt_best' : (($explanation['optionValues'][$option_no] == '×') ? 'quizzy_opt_worst' : 'quizzy_opt_mid');
+            $class = ($explanation['optionValues'][$option_no] == $quizzy_correct_answer_character) ? 'quizzy_opt_best' : (($explanation['optionValues'][$option_no] == $quizzy_wrong_answer_character) ? 'quizzy_opt_worst' : 'quizzy_opt_mid');
             $output .= '<span class="' . $class . '">' . $explanation['optionValues'][$option_no] . '</span>';
           }
 
@@ -721,9 +721,9 @@
           sort($score_values);
           foreach ($output['optionValues'] as &$option_value) {
             if (count($score_values) == 2 && $option_value == $score_values[0])
-              $option_value = '×';
+              $option_value = $quizzy_wrong_answer_character;
             else
-              $option_value = '✓';
+              $option_value = $quizzy_correct_answer_character;
           }
         }
 

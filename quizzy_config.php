@@ -38,6 +38,10 @@
   // escape it twice. So to add a '<' character to a question, you'd need to put &amp;lt; to your quiz.
   $quizzy_html_entities = TRUE;
 
+  // the dimensions of the quiz in pixels
+  $quizzy_quiz_width = 280;
+  $quizzy_quiz_height = 400;
+
   // Whether or not the user should get a 'check answers' but or just a 'next' button.
   // If set to FALSE, the user will enter their answer, click next, and they will never be told
   // whether or not they answered that one question correctly.
@@ -45,10 +49,6 @@
 
   // Whether or not to show the user their score in the question footer by the next button
   $quizzy_show_score = TRUE;
-
-  // the dimensions of the quiz in pixels
-  $quizzy_quiz_width = 280;
-  $quizzy_quiz_height = 400;
 
   // The message to display above the list of quiz names that the user would select
   // this is put in an h1 tag
@@ -61,6 +61,9 @@
   // Determines how strict number questions should be. Quizzy will accept an
   // answer that is +- this value so if the answer is 1.00, it would accept 0.95 < answer < 1.05.
   $quizzy_number_strictness = 0.05;
+
+  $quizzy_correct_answer_character = '✓';
+  $quizzy_wrong_answer_character = '×';
 
   // For input-type questions with a text-type answer, the answer provided in the XML file and the response
   // provided by the user are first made lowercase then stripped of various characters before being compared.
@@ -123,6 +126,13 @@
     // This setting will not do anything as of this version because the delay feature of loading is broken.
     'loadingDelay' => 300,
 
+
+
+
+    // Automatically set javaScript settings
+    // Don't change anything below this comment. The following options are set above in the PHP options.
+    // Changing something down here could break quizzy in weird ways.
+
     // The width and height of the quiz window. These are set above so their PHP variable values are simply used here.
     // You shouldn't change this.
     'quizWidth' => $quizzy_quiz_width,
@@ -130,6 +140,10 @@
 
     // Should the answers be shown or not
     'showAnswer' => $quizzy_show_answer,
+
+    // Correct / Wrong answer characters
+    'correctAnswerCharacter' => $quizzy_correct_answer_character,
+    'wrongAnswerCharacter' => $quizzy_wrong_answer_character,
 
   ); // js_variables
 

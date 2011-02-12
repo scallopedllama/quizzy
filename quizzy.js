@@ -295,7 +295,7 @@ function checkQuestion()
           // in between best and worst, use quizzy_opt_mid
           // or the worst, use quizzy_opt_worst
           var useClass = 'quizzy_opt_worst';
-          if(quizzyState.optionValues[i] == quizzyState.bestScore || quizzyState.optionValues[i] == '✓')
+          if(quizzyState.optionValues[i] == quizzyState.bestScore || quizzyState.optionValues[i] == quizzyState.correctAnswerCharacter)
             useClass = 'quizzy_opt_best';
           if(quizzyState.optionValues[i] > 0 && quizzyState.optionValues[i] < quizzyState.bestScore)
             useClass = 'quizzy_opt_mid';
@@ -308,10 +308,10 @@ function checkQuestion()
       case 'input':
         // Using same classes as above. Comparing to bestScore
         var useClass = 'quizzy_opt_worst';
-        var toPrint = '×';
+        var toPrint = quizzyState.wrongAnswerCharacter;
         if (quizzyState.addScore == quizzyState.bestScore) {
           useClass = 'quizzy_opt_best';
-          toPrint = '✓';
+          toPrint = quizzyState.correctAnswerCharacter;
         }
         else if (quizzyState.addScore > 0) {
           useClass = 'quizzy_opt_mid';
