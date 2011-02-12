@@ -612,7 +612,7 @@
    * @author Joe Balough
    */
   function serve_explanation() {
-    global $quizzy_pic_dir, $quizzy_strip_characters, $quizzy_number_strictness, $quizzy_show_answer;
+    global $quizzy_pic_dir, $quizzy_strip_characters, $quizzy_number_strictness, $quizzy_show_answer, $quizzy_correct_answer_character, $quizzy_wrong_answer_character;
 
     // The output array that will eventually be passed to _json_encode.
     $output = array();
