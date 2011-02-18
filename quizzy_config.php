@@ -48,7 +48,7 @@
   $quizzy_show_answer = TRUE;
 
   // Whether or not to show the user their score in the question footer by the next button
-  $quizzy_show_score = TRUE;
+  $quizzy_show_score = FALSE;
 
   // The message to display above the list of quiz names that the user would select
   // this is put in an h1 tag
