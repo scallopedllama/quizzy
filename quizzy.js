@@ -62,10 +62,9 @@ $(document).ready(function() {
 
   // Disable legacy mode
   $('.quizzy_legacy').remove();
-  $('#quizzy_legacy_form').submit(function (event) {
-    // Don't let the form submit
-    event.preventDefault();
-  });
+  // This actually REMOVES the quizzy_legacy_form FORM element. Eliminating all submit issues.
+  $('#quizzy_legacy_form > *').unwrap();
+
 
   // focus the first radio button and add a keypress handler to start the quiz when the enter key is pressed
   $('.quizzy_quiz_opt:first').focus();
