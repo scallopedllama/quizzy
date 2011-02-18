@@ -55,7 +55,10 @@
     .quizzy_q_opts img { height: 12pt; }
     .quizzy_q_exp img { width: 45%; height: auto; }
     .quizzy_done img { height: 15%; }
-
+  </style>
+<![endif]-->
+<!--[if lte IE 7]>
+  <style type="text/css">
     /* Disable scrollbars in ie6 */
     .quizzy_q {overflow: hidden;}
     #quizzy_load{overflow: hidden;}

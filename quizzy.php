@@ -373,7 +373,7 @@
    * @author Joe Balough
    */
   function serve_question() {
-    global $quizzy_pic_dir, $quizzy_show_score;
+    global $quizzy_pic_dir, $quizzy_show_score, $quizzy_correct_answer_character, $quizzy_wrong_answer_character;
 
     // What will be output
     $output = '<div class="quizzy_q_ic">';
