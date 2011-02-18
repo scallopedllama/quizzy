@@ -249,16 +249,6 @@
       <explanation><text>This is the standard explanation. For Text-based questions, this explanation would be used for all wrong answers.</text></explanation>
     </question>
 
-
-    <question>
-      <text>quizzy also features a robust scoring system where you can define grades and ranks to percent correct.</text>
-      <option>
-        <text>Neat!</text>
-        <score>4</score>
-        <explanation><text>You can even add a unique picture for each rank.</text></explanation>
-      </option>
-    </question>
-
     <question>
       <text>It's easy to customize quizzy too. Just edit the quizzy_config.php file.</text>
       <option>
@@ -305,6 +295,16 @@
         <text>1 quiz per file?</text>
         <score>2</score>
         <explanation><text>Go ahead. It won't look any different to the user.</text></explanation>
+      </option>
+    </question>
+
+
+    <question>
+      <text>quizzy also features a robust scoring system where you can define grades and ranks to percent correct.</text>
+      <option>
+        <text>Neat!</text>
+        <score>4</score>
+        <explanation><text>You can even add a unique picture for each rank. Have a look at your score, rank, and grade after clicking 'Next!'</text></explanation>
       </option>
     </question>
 
