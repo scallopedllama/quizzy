@@ -39,21 +39,24 @@
 <!--[if IE]>
   <style type="text/css">
     .loading-masked { overflow: visible; }
-    /*required to make overflow hidden for quizzy in ie 6/7*/
+    /* required to make overflow hidden for quizzy in ie 6/7 */
     #quizzy {position:relative;}
   </style>
 <![endif]-->
 <!--[if lt IE 7]>
   <style type="text/css">
-    /*Max width and height are not suppored by ie 6 so for those browsers, we're just going
-      to set the images' width and height to the max percentages.
-    */
-    #quizzy_load img{ height: 12pt; }
-    .quizzy_quiz_desc img {display: none;}
-    .quizzy_q_body img {width: 45%; }
-    .quizzy_q_opts img {height: 12pt;}
-    .quizzy_q_exp img {width: 45%; height: auto;}
-    .quizzy_done img {height: 15%;}
+    /*
+     * Max width and height are not suppored by ie 6 so for those browsers, we're just going
+     * to set the images' width and height to the max percentages.
+     */
+    #quizzy_load img{ display: none; }
+    .quizzy_quiz_desc img { display: none; }
+    .quizzy_q_body img { width: 45%; }
+    .quizzy_q_opts img { height: 12pt; }
+    .quizzy_q_exp img { width: 45%; height: auto; }
+    .quizzy_done img { height: 15%; }
+
+    /* Disable scrollbars in ie6 */
     .quizzy_q {overflow: hidden;}
     #quizzy_load{overflow: hidden;}
   </style>
