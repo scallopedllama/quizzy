@@ -38,19 +38,19 @@ quizzy still functions correctly in quirks mode in Internet Explorer, there are 
 ------------------------------------------- Browser compatibility -------------------------------------------------
 
 Tested and confirmed working in the following browsers:
-  IE 6*, 7, and 8 (quirks and standards compliant mode)
+  IE 6, 7, and 8
   Firefox 1.5, 2, 3, and 3.5
-  Opera* 8, 9, and 10
+  Opera 8, 9, and 10
   Safari 4 and 5
   Chrome
   Konqueror 4.3
 
-IE 6 issues:
- - Scrollbars do not work and are disabled.
- - Loading message does not work (users will not be told when AJAX calls are being loaded)
- - Images are constrained by having a width or height set, since max-width & max-height do not work
-
-General IE issues:
+IE issues:
+ - Images are constrained by having a width or height set, since max-width & max-height do not work (6)
+ - Images specified for a quiz are not placed correctly so they are disabled (6 and 7)
+ - Images specified for quiz descriptions disappear after the description scrolls down so they are disabled (6)
+ - Scrollbars do not work and are disabled. (6 and 7)
+ - Loading message does not work so users will not be told when AJAX calls are being loaded. (6, 7, and 8)
  - If IE does not see a Strict DOCTYPE on the first line, it will revert to quarks mode and there are the following issues:
      - scrollUp animations will not look very good.
      - The loading plugin will try to work but be broken.
