@@ -264,7 +264,7 @@ function checkQuestion()
     quizzy_file: quizzyState.quizFile,
     quizzy_index: quizzyState.quizIndex,
     quest_no: quizzyState.currentQuestion,
-    response: userResponse,
+    response: userResponse
   };
   $.getJSON('quizzy/quizzy.php', passingOptions , function(data) {
     // Merge the data object into the quizzyState object
