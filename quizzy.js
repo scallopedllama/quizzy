@@ -52,7 +52,7 @@ $(document).ready(function() {
 
     $.loading.pulse = quizzyState.loadingPulse;
     $.loading.align = quizzyState.loadingAlign;
-    // $.loading.delay = quizzyState.loadingDelay;
+    $.loading.delay = quizzyState.loadingDelay;
     $.loading.onAjax = true;  // don't change this!
   });
 
