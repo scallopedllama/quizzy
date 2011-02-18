@@ -161,7 +161,7 @@ function requestNextQuestion()
     quizzyState.currentQuestion++;
 
     // dump the recieved data into the correct question div
-    $("#quizzy_q" + quizzyState.currentQuestion).html(data);
+    $('#quizzy_q' + quizzyState.currentQuestion).html(data);
 
     // set necessary styles
     $('.quizzy_q').width(quizzyState.quizWidth);
@@ -171,6 +171,7 @@ function requestNextQuestion()
     $('#quizzy_q' + quizzyState.currentQuestion + '_foot_nxt').attr('disabled', true).hide();
     $('#quizzy_q' + quizzyState.currentQuestion + '_exp').hide();
     $('.quizzy_q_opt_val').hide();
+    $('.quizzy_score').fadeOut(quizzyState.fadeSpeed);
 
     // Change the text on the check button to next if the answers aren't to be shown
     if (!quizzyState.showAnswer)
@@ -200,8 +201,9 @@ function requestNextQuestion()
       // uncheck the last question's buttons
       $('.quizzy_q_opt_b').attr('checked', false);
 
-      // fade in the proper button based on the value of the showAnswer setting
+      // fade in the proper button based on the value of the showAnswer setting and the score
       $('#quizzy_q' + quizzyState.currentQuestion + '_foot_chk').attr('disabled', false).fadeIn(quizzyState.fadeSpeed);
+      $('.quizzy_score').fadeIn(quizzyState.fadeSpeed);
 
       // Focus the text field, the first option, or the pick a different quiz button
       $('#quizzy_q' + quizzyState.currentQuestion + '_txt').focus();
