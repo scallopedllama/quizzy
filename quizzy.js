@@ -62,9 +62,9 @@ $(document).ready(function() {
 
   // Disable legacy mode
   $('.quizzy_legacy').remove();
-  $('#quizzy_legacy_form').submit(function (e) {
+  $('#quizzy_legacy_form').submit(function (event) {
     // Don't let the form submit
-    e.preventDefault();
+    event.preventDefault();
   });
 
   // focus the first radio button and add a keypress handler to start the quiz when the enter key is pressed
