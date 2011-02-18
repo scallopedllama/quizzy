@@ -278,7 +278,7 @@
 
         // Add an image after the label if one was set
         if (isset($cur_quiz->img)) {
-          $output .= '<img src="' . $quizzy_pic_dir . $cur_quiz->img['src'] . '" alt="' . $cur_quiz->img['alt'] . '">';
+          $output .= '<img src="' . $quizzy_pic_dir . $cur_quiz->img['src'] . '" alt="' . $cur_quiz->img['alt'] . '" class="quizzy_quiz_img">';
         }
 
         // Add a description if one was set
@@ -288,7 +288,7 @@
 
           // Add an image to the description if one was set
           if (isset($cur_quiz->description->img)) {
-            $output .= '<img src="' . $quizzy_pic_dir . $cur_quiz->description->img['src'] . '" alt="' . $cur_quiz->description->img['alt'] . '" >';
+            $output .= '<img src="' . $quizzy_pic_dir . $cur_quiz->description->img['src'] . '" alt="' . $cur_quiz->description->img['alt'] . '"  class="quizzy_quiz_desc_img">';
           }
 
           // Description text
