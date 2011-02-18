@@ -11,6 +11,10 @@ below.
 
 quizzy requires PHP 5 (for simplexml) and either the PHP json extension (in PHP 5.2.0) or the Zend JSON framework.
 
+jQuery does not support effects in Internet Explorer in quirks mode so the first line on the PHP page containing
+quizzy must be a Strict DOCTYPE like the following:
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+quizzy still functions correctly in quirks mode in Internet Explorer, there are just several more issues (see below).
 
 ------------------------------------- Instructions for use of quizzy ----------------------------------------------
 
@@ -41,15 +45,20 @@ Tested and confirmed working in the following browsers:
   Chrome
   Konqueror 4.3
 
-IE 6 quirks:
+IE 6 issues:
  - loading message does not work (users will not be told when AJAX calls are being loaded)
  - images are constrained by having a width or height set, since max-width & max-height do not work
 
-Opera quirks:
+General IE issues:
+ - If IE does not see a Strict DOCTYPE on the first line, it will revert to quarks mode and there are the following issues:
+     - scrollUp animations will not look very good.
+     - The loading plugin will try to work but be broken.
+
+Opera issues:
  - when scrolling to the second question (and only that one) the first question scrolls from off the
    right side of the screen (instead of its current location). I have no idea why.
 
-Overall quirks:
+Overall issues:
  - Quizzes with descriptions that have pictures will not slide down in a smooth fashion.
    This issue is being worked on.
  - If you skin the quiz to be position: absolute, the jQuery loading plugin stops working.
