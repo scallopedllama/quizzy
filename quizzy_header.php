@@ -54,5 +54,7 @@
     .quizzy_q_opts img {height: 12pt;}
     .quizzy_q_exp img {width: 45%; height: auto;}
     .quizzy_done img {height: 15%;}
+    .quizzy_q {overflow: hidden;}
+    #quizzy_load{overflow: hidden;}
   </style>
 <![endif]-->
