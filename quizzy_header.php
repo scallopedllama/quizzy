@@ -49,16 +49,20 @@
      * Max width and height are not suppored by ie 6 so for those browsers, we're just going
      * to set the images' width and height to the max percentages.
      */
-    #quizzy_load img{ display: none; }
-    .quizzy_quiz_desc img { display: none; }
     .quizzy_q_body img { width: 45%; }
     .quizzy_q_opts img { height: 12pt; }
     .quizzy_q_exp img { width: 45%; height: auto; }
     .quizzy_done img { height: 15%; }
+
+    /* Description image looks ok in ie7, but not ie6. */
+    .quizzy_quiz_desc img { display: none; }
   </style>
 <![endif]-->
 <!--[if lte IE 7]>
   <style type="text/css">
+    /* Turn off quiz images */
+    .quizzy_quiz_img { display: none; }
+
     /* Disable scrollbars in ie6 */
     .quizzy_q {overflow: hidden;}
     #quizzy_load{overflow: hidden;}
