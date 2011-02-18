@@ -390,11 +390,6 @@ function restartQuizzy()
   $('.quizzy_quiz_opt').attr('checked', false);
   // hide all the descriptions
   $('.quizzy_quiz_desc').hide();
-  // Make sure the form won't submit anything
-  $('#quizzy_legacy_form').submit(function (e) {
-    // Don't let the form submit
-    e.preventDefault();
-  });
 
   // scroll the quizzy_q_c back to the start
   $('#quizzy_q_c').animate({left: "0px"}, firstRatio * quizzyState.restartSpeed, quizzyState.animateStyle, function(){
