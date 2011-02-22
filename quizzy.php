@@ -70,7 +70,9 @@
     // Wrapper that contains two panes: quiz select screen on left and the selected quiz on right
     $output .= '<div id="quizzy_c" style="width: ' . ($quizzy_quiz_width * 3) . 'px">';
     // The quiz select wrapper (the left side above)
-    $output .= '<div id="quizzy_load" style="width: ' . $quizzy_quiz_width . 'px">';
+    // Don't give this div an id if in legacy. If it gets the id quizzy_load, then some css bugs come up
+    $load_id = isset($_GET['quizzy_legacy']) ? '' : 'quizzy_load';
+    $output .= '<div id="' . $load_id . '" style="width: ' . $quizzy_quiz_width . 'px">';
     // quiz select inner wrapper
     $output .= '<div class="quizzy_load_ic">';
 
