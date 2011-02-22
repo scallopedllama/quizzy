@@ -264,7 +264,7 @@
       if ( ($file == '.') || ($file == '..') ) continue;
 
       // Make sure it's an XML file
-      if (!strpos(strtolower($file), 'xml'))
+      if (!preg_match("/.xml$/i", $file))
         continue;
 
       // Open that file and parse its xml
